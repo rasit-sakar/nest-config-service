@@ -1,6 +1,12 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { ConfigHistoryEntity } from './config-history.entity';
-import { ConfigEnvironment } from '../../models/config-environment.enum';
+
+export enum ConfigEnvironment {
+  TEST = 'TEST',
+  UAT = 'UAT',
+  PROD = 'PROD',
+  ALL = 'ALL',
+}
 
 @Entity('configs')
 export class ConfigEntity {
@@ -26,10 +32,10 @@ export class ConfigEntity {
   isSecret: boolean;
 
   @Column({ name: 'created_at', type: 'timestamp', nullable: false })
-  createdAt: boolean;
+  createdAt: Date;
 
   @Column({ name: 'updated_at', type: 'timestamp', nullable: false })
-  updatedAt: boolean;
+  updatedAt: Date;
 
   @OneToMany(() => ConfigHistoryEntity, (configHistory) => configHistory.configId, { nullable: true, eager: false })
   history: ConfigHistoryEntity[];

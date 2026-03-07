@@ -17,6 +17,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       migrations: ['dist/infrastructure/migrations/*.js'],
     }),
   ],
-  exports: [],
+  exports: [TypeOrmModule],
 })
 export class ORMModule {}
