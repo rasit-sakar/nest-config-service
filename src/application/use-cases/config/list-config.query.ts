@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { ConfigDomainService } from '../../domain/config/service/config.service';
-import { Config } from '../../domain/config/models/config.model';
+import { ConfigDomainService } from '../../domains/config/service/config.service';
+import { Config } from '../../domains/config/models/config.model';
 
 @Injectable()
 export class ListConfigQuery {

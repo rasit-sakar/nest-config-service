@@ -1,6 +1,6 @@
 import { Global, Module } from '@nestjs/common';
-import { DomainModule } from '../domain/domain.module';
 import { ListConfigQuery } from './config/list-config.query';
+import { DomainModule } from '../domains/domain.module';
 
 @Global()
 @Module({

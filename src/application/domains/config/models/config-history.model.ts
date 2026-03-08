@@ -4,6 +4,5 @@ export interface ConfigHistory {
   updateReason: string;
   oldValue: string;
   newValue: string;
-  enablementChange: boolean;
   changeDate: boolean;
 }

@@ -1,13 +1,6 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { ConfigHistoryEntity } from './config-history.entity';
 
-export enum ConfigEnvironment {
-  TEST = 'TEST',
-  UAT = 'UAT',
-  PROD = 'PROD',
-  ALL = 'ALL',
-}
-
 @Entity('configs')
 export class ConfigEntity {
   @PrimaryGeneratedColumn({ name: 'id' })
@@ -19,11 +12,11 @@ export class ConfigEntity {
   @Column({ name: 'name', type: 'jsonb', nullable: false })
   value: string;
 
-  @Column({ name: 'service_name', type: 'varchar', length: 50, nullable: false })
-  serviceName: string;
+  @Column({ name: 'space_name', type: 'varchar', length: 50, nullable: false })
+  space: string;
 
-  @Column({ name: 'environment', type: 'enum', enum: ConfigEnvironment, nullable: false })
-  environment: ConfigEnvironment;
+  @Column({ name: 'environment', type: 'varchar', length: 20, nullable: false })
+  environment: string;
 
   @Column({ name: 'is_disabled', type: 'boolean', nullable: false })
   isDisabled: boolean;

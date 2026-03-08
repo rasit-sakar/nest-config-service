@@ -19,13 +19,12 @@ export class ConfigRepository {
   }
 
   private mapToDomainModel(configEntity: ConfigEntity): Config {
-    const config = {
+    const config: Config = {
       id: configEntity.id,
       name: configEntity.name,
       value: configEntity.value,
-      serviceName: configEntity.serviceName,
+      space: configEntity.space,
       environment: configEntity.environment,
-      isDisabled: configEntity.isDisabled,
       isSecret: configEntity.isSecret,
       createdAt: configEntity.createdAt,
       updatedAt: configEntity.updatedAt,
@@ -41,7 +40,6 @@ export class ConfigRepository {
       updateReason: configHistoryEntity.updateReason,
       oldValue: configHistoryEntity.oldValue,
       newValue: configHistoryEntity.newValue,
-      enablementChange: configHistoryEntity.enablementChange,
       changeDate: configHistoryEntity.changeDate,
     };
     return configHistory;

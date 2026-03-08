@@ -19,8 +19,8 @@ export class ConfigHistoryEntity {
   @Column({ name: 'new_value', type: 'jsonb' })
   newValue: string;
 
-  @Column({ name: 'enablement_change', type: 'boolean' })
-  enablementChange: boolean;
+  @Column({ name: 'changed_by', type: 'varchar', length: 255 })
+  changedBy: string;
 
   @Column({ name: 'change_date', type: 'timestamp' })
   changeDate: boolean;

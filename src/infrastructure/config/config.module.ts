@@ -1,6 +1,7 @@
 import { Global, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { AppConfig } from './app.config';
+import { PostgresConfig } from './postgres.config';
 
 @Global()
 @Module({
@@ -10,6 +11,7 @@ import { AppConfig } from './app.config';
       load: [
         () => ({
           app: AppConfig.getConfig(),
+          postgres: PostgresConfig.getConfig(),
         }),
       ],
     }),

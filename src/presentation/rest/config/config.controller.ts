@@ -1,6 +1,6 @@
 import { Controller, Get } from '@nestjs/common';
 import { ListAllConfigResponse } from './models/list-all-config.model';
-import { ListConfigQuery } from '../../../application/use-case/config/list-config.query';
+import { ListConfigQuery } from '../../../application/use-cases/config/list-config.query';
 
 @Controller('config')
 export class ConfigController {

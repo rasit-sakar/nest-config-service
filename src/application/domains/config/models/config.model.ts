@@ -4,16 +4,11 @@ export interface Config {
   id: string;
   name: string;
   value: string;
-  environment: ConfigEnvironment;
+  environment: string;
+  space: string;
   description?: string;
+  isSecret: boolean;
   createdAt: Date;
   updatedAt: Date;
   history: ConfigHistory[];
-}
-
-export enum ConfigEnvironment {
-  TEST = 'TEST',
-  UAT = 'UAT',
-  PROD = 'PROD',
-  ALL = 'ALL',
 }
