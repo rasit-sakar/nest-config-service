@@ -1,18 +1,18 @@
 import { Field, ObjectType } from '@nestjs/graphql';
-import { Config } from '../../../../application/domains/config/models/config.model';
+import { Config } from '../../../../application/domain/config/models/config.model';
 
 @ObjectType()
 class ConfigGQLModel {
   @Field({ nullable: false })
   id: string;
   @Field({ nullable: false })
-  key: string;
+  name: string;
   @Field({ nullable: false })
   value: string;
 
   constructor(config: Config) {
     this.id = config.id;
-    this.key = config.name;
+    this.name = config.name;
     this.value = config.value;
   }
 }

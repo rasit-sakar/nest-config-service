@@ -1,10 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ConfigEntity } from '../../../../infrastructure/typeorm/entities/config.entity';
-import { Config } from '../models/config.model';
-import { ConfigHistory } from '../models/config-history.model';
-import { ConfigHistoryEntity } from '../../../../infrastructure/typeorm/entities/config-history.entity';
+import { ConfigEntity } from '../../../infrastructure/typeorm/entities/config.entity';
+import { Config } from './models/config.model';
+import { CreateConfigInput } from '../../contracts/create-config.model';
 
 @Injectable()
 export class ConfigRepository {
@@ -18,6 +17,21 @@ export class ConfigRepository {
     return configs.map((config) => this.mapToDomainModel(config));
   }
 
+  async create(config: CreateConfigInput): Promise<Config> {
+    const dateNow = new Date();
+    const configEntity = this.configRepository.create({
+      name: config.name,
+      value: config.value,
+      environment: config.environment,
+      space: config.space,
+      isSecret: config.isSecret,
+      createdAt: dateNow,
+      updatedAt: dateNow,
+    });
+    await this.configRepository.save(configEntity);
+    return this.mapToDomainModel(configEntity);
+  }
+
   private mapToDomainModel(configEntity: ConfigEntity): Config {
     const config: Config = {
       id: configEntity.id,
@@ -28,20 +42,7 @@ export class ConfigRepository {
       isSecret: configEntity.isSecret,
       createdAt: configEntity.createdAt,
       updatedAt: configEntity.updatedAt,
-      history: configEntity.history ? configEntity.history.map((history) => this.mapHistoryToDomainModel(history)) : [],
     };
     return config;
-  }
-
-  private mapHistoryToDomainModel(configHistoryEntity: ConfigHistoryEntity): ConfigHistory {
-    const configHistory = {
-      id: configHistoryEntity.id,
-      configId: configHistoryEntity.configId,
-      updateReason: configHistoryEntity.updateReason,
-      oldValue: configHistoryEntity.oldValue,
-      newValue: configHistoryEntity.newValue,
-      changeDate: configHistoryEntity.changeDate,
-    };
-    return configHistory;
   }
 }

@@ -9,7 +9,7 @@ export class ConfigEntity {
   @Column({ name: 'name', type: 'varchar', length: 100, nullable: false })
   name: string;
 
-  @Column({ name: 'name', type: 'jsonb', nullable: false })
+  @Column({ name: 'value', type: 'jsonb', nullable: false })
   value: string;
 
   @Column({ name: 'space_name', type: 'varchar', length: 50, nullable: false })

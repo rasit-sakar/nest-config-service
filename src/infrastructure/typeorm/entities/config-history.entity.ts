@@ -23,5 +23,5 @@ export class ConfigHistoryEntity {
   changedBy: string;
 
   @Column({ name: 'change_date', type: 'timestamp' })
-  changeDate: boolean;
+  changeDate: Date;
 }

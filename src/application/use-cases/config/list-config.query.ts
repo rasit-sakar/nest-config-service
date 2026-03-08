@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { ConfigDomainService } from '../../domains/config/service/config.service';
-import { Config } from '../../domains/config/models/config.model';
+import { ConfigService } from '../../domain/config/config.service';
+import { Config } from '../../domain/config/models/config.model';
 
 @Injectable()
 export class ListConfigQuery {
-  constructor(private readonly configDomainService: ConfigDomainService) {}
+  constructor(private readonly configService: ConfigService) {}
 
   async execute(): Promise<Config[]> {
-    return this.configDomainService.findAll();
+    return this.configService.findAll();
   }
 }

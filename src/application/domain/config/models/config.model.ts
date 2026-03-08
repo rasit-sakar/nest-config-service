@@ -1,5 +1,3 @@
-import { ConfigHistory } from './config-history.model';
-
 export interface Config {
   id: string;
   name: string;
@@ -10,5 +8,4 @@ export interface Config {
   isSecret: boolean;
   createdAt: Date;
   updatedAt: Date;
-  history: ConfigHistory[];
 }
