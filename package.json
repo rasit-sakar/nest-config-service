@@ -18,17 +18,28 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "migration:create": "npx typeorm migration:create ./src/infrastructure/typeorm/migrations/new-migration"
+    "migration:create": "npx typeorm migration:create ./src/infrastructure/typeorm/migrations/new-migration",
+    "migration:generate": "npx typeorm migration:generate -p ./src/infrastructure/typeorm/migrations -d ./src/infrastructure/typeorm/data-source.ts",
+    "migration:run": "npx typeorm migration:run -d ./src/infrastructure/typeorm/data-source.ts",
+    "migration:revert": "npx typeorm migration:revert -d ./src/infrastructure/typeorm/data-source.ts",
+    "graphql:generate": "ts-node src/presentation/graphql/generate-types.ts"
   },
   "dependencies": {
+    "@apollo/server": "^5.4.0",
+    "@as-integrations/express5": "^1.1.2",
+    "@nestjs/apollo": "^13.2.4",
     "@nestjs/common": "^11.0.1",
     "@nestjs/config": "^4.0.1",
     "@nestjs/core": "^11.0.1",
+    "@nestjs/graphql": "^13.2.4",
     "@nestjs/platform-express": "^11.0.1",
     "@nestjs/swagger": "^11.0.7",
     "@nestjs/typeorm": "^11.0.0",
+    "graphql": "^16.13.1",
+    "pg": "^8.20.0",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
+    "ts-morph": "^27.0.2",
     "typeorm": "^0.3.21"
   },
   "devDependencies": {

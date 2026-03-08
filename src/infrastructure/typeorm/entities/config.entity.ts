@@ -15,7 +15,7 @@ export class ConfigEntity {
   @Column({ name: 'space_name', type: 'varchar', length: 50, nullable: false })
   space: string;
 
-  @Column({ name: 'environment', type: 'varchar', length: 20, nullable: false })
+  @Column({ name: 'environment_name', type: 'varchar', length: 20, nullable: false })
   environment: string;
 
   @Column({ name: 'is_disabled', type: 'boolean', nullable: false })

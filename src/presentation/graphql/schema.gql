@@ -1,0 +1,13 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type ConfigGQLModel {
+  id: String!
+  key: String!
+  value: String!
+}
+
+type Query {
+  getConfigs: [ConfigGQLModel!]!
+}
