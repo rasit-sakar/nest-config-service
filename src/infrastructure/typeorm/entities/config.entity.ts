@@ -18,6 +18,9 @@ export class ConfigEntity {
   @Column({ name: 'environment_name', type: 'varchar', length: 20, nullable: false })
   environment: string;
 
+  @Column({ name: 'description', type: 'text', nullable: true })
+  description?: string;
+
   @Column({ name: 'is_disabled', type: 'boolean', nullable: false })
   isDisabled: boolean;
 

@@ -4,10 +4,10 @@ import { Config } from '../../domain/config/models/config.model';
 import { DefaultConfigFilters } from '../../contracts/default-config-filters.model';
 
 @Injectable()
-export class ListConfigQuery {
+export class GetConfigQuery {
   constructor(private readonly configService: ConfigService) {}
 
-  async execute(filters?: DefaultConfigFilters): Promise<Config[]> {
-    return this.configService.findAll(filters);
+  async execute(defaultFilters: DefaultConfigFilters, id: string): Promise<Config> {
+    return this.configService.findById(defaultFilters, id);
   }
 }

@@ -4,10 +4,44 @@
 
 type ConfigGQLModel {
   id: String!
-  key: String!
+  name: String!
   value: String!
+  description: String
+  isSecret: Boolean!
+  createdAt: String!
+  updatedAt: String!
 }
 
 type Query {
-  getConfigs: [ConfigGQLModel!]!
+  getConfigs(filters: ConfigFiltersGQLInput): [ConfigGQLModel!]!
+  getConfig(id: String!, filters: ConfigFiltersGQLInput): ConfigGQLModel!
+}
+
+input ConfigFiltersGQLInput {
+  space: String
+  environment: String
+}
+
+type Mutation {
+  createConfig(input: CreateConfigGQLInput!): ConfigGQLModel!
+  updateConfig(id: String!, input: UpdateConfigGQLInput!): ConfigGQLModel!
+  deleteConfig(id: String!, filters: ConfigFiltersGQLInput): Boolean!
+}
+
+input CreateConfigGQLInput {
+  name: String!
+  value: String!
+  environment: String!
+  space: String!
+  description: String
+  isSecret: Boolean!
+}
+
+input UpdateConfigGQLInput {
+  name: String
+  value: String
+  environment: String
+  space: String
+  description: String
+  isSecret: Boolean
 }

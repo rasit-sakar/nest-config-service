@@ -8,6 +8,7 @@ export class NewMigration1772999668158 implements MigrationInterface {
             value jsonb not null,
             space_name varchar(50) not null,
             environment_name varchar(20) not null,
+            description text,
             is_disabled boolean default false,
             is_secret boolean default false,
             created_at timestamp DEFAULT now(),
