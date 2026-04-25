@@ -27,7 +27,7 @@ export class ConfigRepository {
       where,
       relations: ['history'],
     });
-    return configs.map((config) => this.mapToDomainModel(config));
+    return configs.map((config) => this.mapToDTO(config));
   }
 
   async findOneByName(defaultFilters: DefaultConfigFilters, name: string): Promise<Config | null> {
@@ -41,7 +41,7 @@ export class ConfigRepository {
       relations: ['history'],
     });
 
-    return configEntity ? this.mapToDomainModel(configEntity) : null;
+    return configEntity ? this.mapToDTO(configEntity) : null;
   }
 
   async create(config: CreateConfigInput): Promise<Config> {
@@ -58,7 +58,7 @@ export class ConfigRepository {
       updatedAt: dateNow,
     });
     await this.configRepository.save(configEntity);
-    return this.mapToDomainModel(configEntity);
+    return this.mapToDTO(configEntity);
   }
 
   async updateByName(defaultFilters: DefaultConfigFilters, name: string, updateConfig: UpdateConfigInput): Promise<Config> {
@@ -80,7 +80,7 @@ export class ConfigRepository {
 
     configEntity.updatedAt = new Date();
     await this.configRepository.save(configEntity);
-    return this.mapToDomainModel(configEntity);
+    return this.mapToDTO(configEntity);
   }
 
   async deleteByName(defaultFilters: DefaultConfigFilters, name: string): Promise<void> {
@@ -92,7 +92,7 @@ export class ConfigRepository {
     });
   }
 
-  private mapToDomainModel(configEntity: ConfigEntity): Config {
+  private mapToDTO(configEntity: ConfigEntity): Config {
     const config: Config = {
       id: configEntity.id,
       name: configEntity.name,
