@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
 import { ListAllConfigResponse } from './models/list-all-config.model';
 import { ListConfigQuery } from '../../../application/use-cases/config/list-config.query';
 import { GetConfigQuery } from '../../../application/use-cases/config/get-config.query';
@@ -9,8 +9,11 @@ import { CreateConfigRequest, CreateConfigResponse } from './models/create-confi
 import { UpdateConfigRequest, UpdateConfigResponse } from './models/update-config.model';
 import { GetConfigResponse } from './models/get-config.model';
 import { DeleteConfigResponse } from './models/delete-config.model';
+import { CurrentSpace } from '../../auth/current-space.decorator';
+import { SpaceAuthGuard } from '../../auth/space-auth.guard';
 
 @Controller('config')
+@UseGuards(SpaceAuthGuard)
 export class ConfigController {
   constructor(
     private readonly listConfigUseCase: ListConfigQuery,
@@ -20,34 +23,32 @@ export class ConfigController {
     private readonly deleteConfigCommand: DeleteConfigCommand,
   ) {}
 
-  @Get(':space/:environment')
-  async list(@Param('space') space: string, @Param('environment') environment: string): Promise<ListAllConfigResponse> {
-    const configs = await this.listConfigUseCase.execute({ space, environment });
+  @Get()
+  async list(@CurrentSpace() currentSpace: { space: string; environment: string }): Promise<ListAllConfigResponse> {
+    const configs = await this.listConfigUseCase.execute(currentSpace);
     return { data: configs, success: true };
   }
 
-  @Get(':space/:environment/:name')
+  @Get(':name')
   async getById(
-    @Param('space') space: string,
-    @Param('environment') environment: string,
+    @CurrentSpace() currentSpace: { space: string; environment: string },
     @Param('name') name: string,
   ): Promise<GetConfigResponse> {
-    const config = await this.getConfigUseCase.execute({ space, environment }, name);
+    const config = await this.getConfigUseCase.execute(currentSpace, name);
     return { data: config, success: true };
   }
 
-  @Post(':space/:environment')
+  @Post()
   async create(
-    @Param('space') space: string,
-    @Param('environment') environment: string,
+    @CurrentSpace() currentSpace: { space: string; environment: string },
     @Body() createConfigRequest: CreateConfigRequest,
   ): Promise<CreateConfigResponse> {
     const config = await this.createConfigCommand.execute({
       name: createConfigRequest.name,
       value: createConfigRequest.value,
-      environment: environment,
+      environment: currentSpace.environment,
       isSecret: createConfigRequest.isSecret,
-      space: space,
+      space: currentSpace.space,
       description: createConfigRequest.description,
       isDisabled: createConfigRequest.isDisabled,
     });
@@ -55,14 +56,13 @@ export class ConfigController {
     return { data: config, success: true };
   }
 
-  @Put(':space/:environment/:name')
+  @Put(':name')
   async update(
-    @Param('space') space: string,
-    @Param('environment') environment: string,
+    @CurrentSpace() currentSpace: { space: string; environment: string },
     @Param('name') name: string,
     @Body() updateConfigRequest: UpdateConfigRequest,
   ): Promise<UpdateConfigResponse> {
-    const config = await this.updateConfigCommand.execute({ space, environment }, name, {
+    const config = await this.updateConfigCommand.execute(currentSpace, name, {
       name: updateConfigRequest.name,
       value: updateConfigRequest.value,
       description: updateConfigRequest.description,
@@ -74,14 +74,13 @@ export class ConfigController {
     return { data: config, success: true };
   }
 
-  @Delete(':space/:environment/:name')
+  @Delete(':name')
   async remove(
-    @Param('space') space: string,
-    @Param('environment') environment: string,
+    @CurrentSpace() currentSpace: { space: string; environment: string },
     @Param('name') name: string,
     @Query('updateReason') updateReason?: string,
   ): Promise<DeleteConfigResponse> {
-    await this.deleteConfigCommand.execute({ space, environment }, name, updateReason);
+    await this.deleteConfigCommand.execute(currentSpace, name, updateReason);
     return { data: true, success: true };
   }
 }

@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ConfigEntity } from '../../../infrastructure/typeorm/entities/config.entity';
+import { SpaceEntity } from '../../../infrastructure/typeorm/entities/space.entity';
 import { Config } from './models/config.model';
 import { CreateConfigInput } from '../../contracts/create-config.model';
 import { UpdateConfigInput } from '../../contracts/update-config.model';
@@ -15,18 +16,32 @@ export class ConfigRepository {
   ) {}
 
   async findAll(filters?: DefaultConfigFilters): Promise<Config[]> {
-    const where = {
-      isDisabled: filters?.isDisabled ?? undefined,
-      space: undefined,
-      environment: undefined,
-    };
-    if (filters?.space) where.space = filters.space;
-    if (filters?.environment) where.environment = filters.environment;
+    const queryBuilder = this.configRepository.createQueryBuilder('config').leftJoinAndSelect('config.history', 'history');
 
-    const configs = await this.configRepository.find({
-      where,
-      relations: ['history'],
-    });
+    if (filters?.isDisabled !== undefined) {
+      queryBuilder.andWhere('config.isDisabled = :isDisabled', { isDisabled: filters.isDisabled });
+    }
+
+    if (filters?.space && filters?.environment) {
+      const globalSpaceSubquery = this.configRepository
+        .createQueryBuilder('space')
+        .select('space.name')
+        .from(SpaceEntity, 'space')
+        .where('space.environment = :env AND space.isGlobal = true');
+
+      queryBuilder.andWhere(
+        '(config.space = :space AND config.environment = :env) OR (config.environment = :env AND config.space IN (' +
+          globalSpaceSubquery.getQuery() +
+          '))',
+        { space: filters.space, env: filters.environment },
+      );
+    } else if (filters?.environment) {
+      queryBuilder.andWhere('config.environment = :env', { env: filters.environment });
+    } else if (filters?.space) {
+      queryBuilder.andWhere('config.space = :space', { space: filters.space });
+    }
+
+    const configs = await queryBuilder.getMany();
     return configs.map((config) => this.mapToDomainModel(config));
   }
 
@@ -41,7 +56,30 @@ export class ConfigRepository {
       relations: ['history'],
     });
 
-    return configEntity ? this.mapToDomainModel(configEntity) : null;
+    if (configEntity) {
+      return this.mapToDomainModel(configEntity);
+    }
+
+    if (defaultFilters.environment) {
+      const globalSpaceSubquery = this.configRepository
+        .createQueryBuilder('space')
+        .select('space.name')
+        .from(SpaceEntity, 'space')
+        .where('space.environment = :env AND space.isGlobal = true');
+
+      const globalConfig = await this.configRepository
+        .createQueryBuilder('config')
+        .leftJoinAndSelect('config.history', 'history')
+        .where('config.name = :name', { name })
+        .andWhere('config.environment = :env', { env: defaultFilters.environment })
+        .andWhere('config.space IN (' + globalSpaceSubquery.getQuery() + ')')
+        .setParameters({ env: defaultFilters.environment })
+        .getOne();
+
+      return globalConfig ? this.mapToDomainModel(globalConfig) : null;
+    }
+
+    return null;
   }
 
   async create(config: CreateConfigInput): Promise<Config> {
