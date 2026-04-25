@@ -14,6 +14,12 @@ export class UpdateConfigRequest {
 
   @ApiProperty({ description: 'Indicates if the configuration is a secret', example: true, required: false })
   isSecret?: boolean;
+
+  @ApiProperty({ description: 'Indicates if the configuration is disabled', example: false, required: false })
+  isDisabled?: boolean;
+
+  @ApiProperty({ description: 'Reason for the update', example: 'Updated database connection string', required: false })
+  updateReason?: string;
 }
 
 export class UpdateConfigResponse extends RestResponse<Config> {}

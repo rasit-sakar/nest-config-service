@@ -11,6 +11,8 @@ export class CreateConfigRequest {
   description?: string;
   @ApiProperty({ description: 'Indicates if the configuration is a secret', example: true })
   isSecret: boolean;
+  @ApiProperty({ description: 'Indicates if the configuration is disabled', example: false })
+  isDisabled: boolean;
 }
 
 export class CreateConfigResponse extends RestResponse<Config> {}

@@ -12,13 +12,13 @@ export class UpdateConfigCommand {
     private readonly configHistoryService: ConfigHistoryService,
   ) {}
 
-  async execute(defaultFilters: DefaultConfigFilters, id: string, updateConfigModel: UpdateConfigInput): Promise<Config> {
-    const previousConfig = await this.configService.findById(defaultFilters, id);
-    const updatedConfig = await this.configService.update(defaultFilters, id, updateConfigModel);
+  async execute(defaultFilters: DefaultConfigFilters, name: string, updateConfigModel: UpdateConfigInput): Promise<Config> {
+    const previousConfig = await this.configService.findByName(defaultFilters, name);
+    const updatedConfig = await this.configService.updateByName(defaultFilters, name, updateConfigModel);
 
     await this.configHistoryService.createHistory({
       configId: updatedConfig.id,
-      updateReason: 'Config updated',
+      updateReason: updateConfigModel.updateReason,
       oldValue: JSON.stringify(previousConfig),
       newValue: JSON.stringify(updatedConfig),
       changeDate: new Date(),

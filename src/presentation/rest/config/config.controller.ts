@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/common';
 import { ListAllConfigResponse } from './models/list-all-config.model';
 import { ListConfigQuery } from '../../../application/use-cases/config/list-config.query';
 import { GetConfigQuery } from '../../../application/use-cases/config/get-config.query';
@@ -26,13 +26,13 @@ export class ConfigController {
     return { data: configs, success: true };
   }
 
-  @Get(':space/:environment/:id')
+  @Get(':space/:environment/:name')
   async getById(
     @Param('space') space: string,
     @Param('environment') environment: string,
-    @Param('id') id: string,
+    @Param('name') name: string,
   ): Promise<GetConfigResponse> {
-    const config = await this.getConfigUseCase.execute({ space, environment }, id);
+    const config = await this.getConfigUseCase.execute({ space, environment }, name);
     return { data: config, success: true };
   }
 
@@ -49,35 +49,39 @@ export class ConfigController {
       isSecret: createConfigRequest.isSecret,
       space: space,
       description: createConfigRequest.description,
+      isDisabled: createConfigRequest.isDisabled,
     });
 
     return { data: config, success: true };
   }
 
-  @Put(':space/:environment/:id')
+  @Put(':space/:environment/:name')
   async update(
     @Param('space') space: string,
     @Param('environment') environment: string,
-    @Param('id') id: string,
+    @Param('name') name: string,
     @Body() updateConfigRequest: UpdateConfigRequest,
   ): Promise<UpdateConfigResponse> {
-    const config = await this.updateConfigCommand.execute({ space, environment }, id, {
+    const config = await this.updateConfigCommand.execute({ space, environment }, name, {
       name: updateConfigRequest.name,
       value: updateConfigRequest.value,
       description: updateConfigRequest.description,
       isSecret: updateConfigRequest.isSecret,
+      isDisabled: updateConfigRequest.isDisabled,
+      updateReason: updateConfigRequest.updateReason,
     });
 
     return { data: config, success: true };
   }
 
-  @Delete(':space/:environment/:id')
+  @Delete(':space/:environment/:name')
   async remove(
     @Param('space') space: string,
     @Param('environment') environment: string,
-    @Param('id') id: string,
+    @Param('name') name: string,
+    @Query('updateReason') updateReason?: string,
   ): Promise<DeleteConfigResponse> {
-    await this.deleteConfigCommand.execute({ space, environment }, id);
+    await this.deleteConfigCommand.execute({ space, environment }, name, updateReason);
     return { data: true, success: true };
   }
 }

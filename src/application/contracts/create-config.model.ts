@@ -5,4 +5,5 @@ export class CreateConfigInput {
   space: string;
   description?: string;
   isSecret: boolean;
+  isDisabled: boolean;
 }

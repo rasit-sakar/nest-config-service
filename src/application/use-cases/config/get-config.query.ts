@@ -7,7 +7,7 @@ import { DefaultConfigFilters } from '../../contracts/default-config-filters.mod
 export class GetConfigQuery {
   constructor(private readonly configService: ConfigService) {}
 
-  async execute(defaultFilters: DefaultConfigFilters, id: string): Promise<Config> {
-    return this.configService.findById(defaultFilters, id);
+  async execute(defaultFilters: DefaultConfigFilters, name: string): Promise<Config> {
+    return this.configService.findByName(defaultFilters, name);
   }
 }

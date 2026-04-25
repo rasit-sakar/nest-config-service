@@ -27,6 +27,11 @@ export class NewMigration1772999668158 implements MigrationInterface {
         )`);
 
     await queryRunner.query(`CREATE UNIQUE INDEX "unique-config-index" ON public.configs ("name",space_name,environment_name);`);
+    await queryRunner.query(`CREATE INDEX "unique-config-index" ON public.configs ("name",space_name,environment_name,is_disabled);`);
+    await queryRunner.query(`CREATE INDEX "default-filter-index" ON public.configs (space_name,environment_name);`);
+    await queryRunner.query(
+      `CREATE INDEX "default-filter-with-disabled-index" ON public.configs (space_name,environment_name, is_disabled);`,
+    );
     await queryRunner.query(`CREATE INDEX "config-history-foreing-key" ON public.config_history (config_id);`);
   }
 

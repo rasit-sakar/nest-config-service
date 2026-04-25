@@ -14,18 +14,19 @@ type ConfigGQLModel {
 
 type Query {
   getConfigs(filters: ConfigFiltersGQLInput): [ConfigGQLModel!]!
-  getConfig(id: String!, filters: ConfigFiltersGQLInput): ConfigGQLModel!
+  getConfig(name: String!, filters: ConfigFiltersGQLInput): ConfigGQLModel!
 }
 
 input ConfigFiltersGQLInput {
-  space: String
-  environment: String
+  space: String!
+  environment: String!
+  isDisabled: Boolean
 }
 
 type Mutation {
   createConfig(input: CreateConfigGQLInput!): ConfigGQLModel!
-  updateConfig(id: String!, input: UpdateConfigGQLInput!): ConfigGQLModel!
-  deleteConfig(id: String!, filters: ConfigFiltersGQLInput): Boolean!
+  updateConfig(name: String!, input: UpdateConfigGQLInput!): ConfigGQLModel!
+  deleteConfig(name: String!, filters: ConfigFiltersGQLInput!, updateReason: String!): Boolean!
 }
 
 input CreateConfigGQLInput {
@@ -35,13 +36,16 @@ input CreateConfigGQLInput {
   space: String!
   description: String
   isSecret: Boolean!
+  isDisabled: Boolean!
 }
 
 input UpdateConfigGQLInput {
-  name: String
-  value: String
-  environment: String
-  space: String
+  name: String!
+  value: String!
+  environment: String!
+  space: String!
   description: String
-  isSecret: Boolean
+  isSecret: Boolean!
+  isDisabled: Boolean
+  updateReason: String!
 }

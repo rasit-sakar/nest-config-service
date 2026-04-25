@@ -10,15 +10,15 @@ export class DeleteConfigCommand {
     private readonly configHistoryService: ConfigHistoryService,
   ) {}
 
-  async execute(defaultFilters: DefaultConfigFilters, id: string): Promise<void> {
-    const previousConfig = await this.configService.findById(defaultFilters, id);
-    const deletedConfig = await this.configService.remove(defaultFilters, id);
+  async execute(defaultFilters: DefaultConfigFilters, name: string, updateReason: string): Promise<void> {
+    const config = await this.configService.findByName(defaultFilters, name);
+    await this.configService.deleteByName(defaultFilters, name);
 
     await this.configHistoryService.createHistory({
-      configId: deletedConfig.id,
-      updateReason: 'Config disabled',
-      oldValue: JSON.stringify(previousConfig),
-      newValue: JSON.stringify(deletedConfig),
+      configId: config.id,
+      updateReason: updateReason,
+      oldValue: JSON.stringify(config),
+      newValue: JSON.stringify(''),
       changeDate: new Date(),
     });
   }

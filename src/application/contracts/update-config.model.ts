@@ -5,4 +5,6 @@ export class UpdateConfigInput {
   space?: string;
   description?: string;
   isSecret?: boolean;
+  isDisabled?: boolean;
+  updateReason: string;
 }

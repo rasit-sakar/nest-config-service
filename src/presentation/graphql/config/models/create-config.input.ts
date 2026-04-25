@@ -19,4 +19,7 @@ export class CreateConfigGQLInput {
 
   @Field()
   isSecret: boolean;
+
+  @Field()
+  isDisabled: boolean;
 }

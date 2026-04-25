@@ -15,7 +15,11 @@ export class ConfigRepository {
   ) {}
 
   async findAll(filters?: DefaultConfigFilters): Promise<Config[]> {
-    const where = { isDisabled: false, space: undefined, environment: undefined };
+    const where = {
+      isDisabled: filters?.isDisabled ?? undefined,
+      space: undefined,
+      environment: undefined,
+    };
     if (filters?.space) where.space = filters.space;
     if (filters?.environment) where.environment = filters.environment;
 
@@ -26,9 +30,14 @@ export class ConfigRepository {
     return configs.map((config) => this.mapToDomainModel(config));
   }
 
-  async findOneById(defaultFilters: DefaultConfigFilters, id: string): Promise<Config | null> {
+  async findOneByName(defaultFilters: DefaultConfigFilters, name: string): Promise<Config | null> {
     const configEntity = await this.configRepository.findOne({
-      where: { id, isDisabled: false, space: defaultFilters.space, environment: defaultFilters.environment },
+      where: {
+        name,
+        isDisabled: defaultFilters.isDisabled ?? undefined,
+        space: defaultFilters.space,
+        environment: defaultFilters.environment,
+      },
       relations: ['history'],
     });
 
@@ -43,7 +52,7 @@ export class ConfigRepository {
       environment: config.environment,
       space: config.space,
       description: config.description,
-      isDisabled: false,
+      isDisabled: config.isDisabled,
       isSecret: config.isSecret,
       createdAt: dateNow,
       updatedAt: dateNow,
@@ -52,40 +61,35 @@ export class ConfigRepository {
     return this.mapToDomainModel(configEntity);
   }
 
-  async update(defaultFilters: DefaultConfigFilters, id: string, updateConfig: UpdateConfigInput): Promise<Config> {
+  async updateByName(defaultFilters: DefaultConfigFilters, name: string, updateConfig: UpdateConfigInput): Promise<Config> {
     const configEntity = await this.configRepository.findOneBy({
-      id,
+      name,
+      isDisabled: defaultFilters.isDisabled ?? false,
       space: defaultFilters.space,
       environment: defaultFilters.environment,
     });
     if (!configEntity) {
-      throw new NotFoundException(`Config with id ${id} not found`);
+      throw new NotFoundException(`Config with name ${name} not found`);
     }
 
     if (updateConfig.name !== undefined) configEntity.name = updateConfig.name;
     if (updateConfig.value !== undefined) configEntity.value = updateConfig.value;
     if (updateConfig.description !== undefined) configEntity.description = updateConfig.description;
     if (updateConfig.isSecret !== undefined) configEntity.isSecret = updateConfig.isSecret;
+    if (updateConfig.isDisabled !== undefined) configEntity.isDisabled = updateConfig.isDisabled;
 
     configEntity.updatedAt = new Date();
     await this.configRepository.save(configEntity);
     return this.mapToDomainModel(configEntity);
   }
 
-  async softDelete(defaultFilters: DefaultConfigFilters, id: string): Promise<Config> {
-    const configEntity = await this.configRepository.findOneBy({
-      id,
+  async deleteByName(defaultFilters: DefaultConfigFilters, name: string): Promise<void> {
+    await this.configRepository.delete({
+      name,
+      isDisabled: defaultFilters.isDisabled ?? false,
       space: defaultFilters.space,
       environment: defaultFilters.environment,
     });
-    if (!configEntity) {
-      throw new NotFoundException(`Config with id ${id} not found`);
-    }
-
-    configEntity.isDisabled = true;
-    configEntity.updatedAt = new Date();
-    await this.configRepository.save(configEntity);
-    return this.mapToDomainModel(configEntity);
   }
 
   private mapToDomainModel(configEntity: ConfigEntity): Config {
@@ -93,10 +97,13 @@ export class ConfigRepository {
       id: configEntity.id,
       name: configEntity.name,
       value: configEntity.value,
+      environment: configEntity.environment,
+      space: configEntity.space,
       description: configEntity.description,
       isSecret: configEntity.isSecret,
       createdAt: configEntity.createdAt,
       updatedAt: configEntity.updatedAt,
+      isDisabled: configEntity.isDisabled,
     };
     return config;
   }

@@ -26,8 +26,11 @@ export class ConfigResolver {
   }
 
   @Query(() => ConfigGQLModel)
-  async getConfig(@Args('id') id: string, @Args('filters', { nullable: true }) filters?: ConfigFiltersGQLInput): Promise<ConfigGQLModel> {
-    const config = await this.getConfigUseCase.execute(filters || {}, id);
+  async getConfig(
+    @Args('name') name: string,
+    @Args('filters', { nullable: true }) filters?: ConfigFiltersGQLInput,
+  ): Promise<ConfigGQLModel> {
+    const config = await this.getConfigUseCase.execute(filters || {}, name);
     return new ConfigGQLModel(config);
   }
 
@@ -40,28 +43,35 @@ export class ConfigResolver {
       space: input.space,
       description: input.description,
       isSecret: input.isSecret,
+      isDisabled: input.isDisabled,
     });
     return new ConfigGQLModel(config);
   }
 
   @Mutation(() => ConfigGQLModel)
-  async updateConfig(@Args('id') id: string, @Args('input') input: UpdateConfigGQLInput): Promise<ConfigGQLModel> {
+  async updateConfig(@Args('name') name: string, @Args('input') input: UpdateConfigGQLInput): Promise<ConfigGQLModel> {
     const filters = {
       space: input.space,
       environment: input.environment,
     };
-    const config = await this.updateConfigCommand.execute(filters, id, {
+    const config = await this.updateConfigCommand.execute(filters, name, {
       name: input.name,
       value: input.value,
       description: input.description,
       isSecret: input.isSecret,
+      isDisabled: input.isDisabled,
+      updateReason: input.updateReason,
     });
     return new ConfigGQLModel(config);
   }
 
   @Mutation(() => Boolean)
-  async deleteConfig(@Args('id') id: string, @Args('filters', { nullable: true }) filters?: ConfigFiltersGQLInput): Promise<boolean> {
-    await this.deleteConfigCommand.execute(filters || {}, id);
+  async deleteConfig(
+    @Args('name') name: string,
+    @Args('filters', { nullable: false }) filters?: ConfigFiltersGQLInput,
+    @Args('updateReason', { nullable: false }) updateReason?: string,
+  ): Promise<boolean> {
+    await this.deleteConfigCommand.execute(filters || {}, name, updateReason);
     return true;
   }
 }

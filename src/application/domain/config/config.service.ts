@@ -13,10 +13,10 @@ export class ConfigService {
     return this.configRepository.findAll(filters);
   }
 
-  async findById(defaultFilters: DefaultConfigFilters, id: string): Promise<Config> {
-    const config = await this.configRepository.findOneById(defaultFilters, id);
+  async findByName(defaultFilters: DefaultConfigFilters, name: string): Promise<Config> {
+    const config = await this.configRepository.findOneByName(defaultFilters, name);
     if (!config) {
-      throw new NotFoundException(`Config with id ${id} not found`);
+      throw new NotFoundException(`Config with name ${name} not found`);
     }
     return config;
   }
@@ -25,11 +25,11 @@ export class ConfigService {
     return this.configRepository.create(createConfigModel);
   }
 
-  async update(defaultFilters: DefaultConfigFilters, id: string, updateConfigModel: UpdateConfigInput): Promise<Config> {
-    return this.configRepository.update(defaultFilters, id, updateConfigModel);
+  async updateByName(defaultFilters: DefaultConfigFilters, name: string, updateConfigModel: UpdateConfigInput): Promise<Config> {
+    return this.configRepository.updateByName(defaultFilters, name, updateConfigModel);
   }
 
-  async remove(defaultFilters: DefaultConfigFilters, id: string): Promise<Config> {
-    return this.configRepository.softDelete(defaultFilters, id);
+  async deleteByName(defaultFilters: DefaultConfigFilters, name: string): Promise<void> {
+    await this.configRepository.deleteByName(defaultFilters, name);
   }
 }

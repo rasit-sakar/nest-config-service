@@ -2,9 +2,12 @@ import { Field, InputType } from '@nestjs/graphql';
 
 @InputType()
 export class ConfigFiltersGQLInput {
-  @Field({ nullable: true })
+  @Field({ nullable: false })
   space?: string;
 
-  @Field({ nullable: true })
+  @Field({ nullable: false })
   environment?: string;
+
+  @Field({ nullable: true })
+  isDisabled?: boolean;
 }
