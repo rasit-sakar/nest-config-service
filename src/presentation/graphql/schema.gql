@@ -13,46 +13,39 @@ type ConfigGQLModel {
 }
 
 type Query {
-  getConfigs: [ConfigGQLModel!]!
-  getConfig(name: String!): ConfigGQLModel!
+  getConfigs(filters: ConfigFiltersGQLInput): [ConfigGQLModel!]!
+  getConfig(name: String!, filters: ConfigFiltersGQLInput): ConfigGQLModel!
 }
 
-input CreateConfigGQLInput {
-  name: String!
-  value: String!
-  description: String
-  isSecret: Boolean!
-  isDisabled: Boolean
-}
-
-input UpdateConfigGQLInput {
-  name: String
-  value: String
-  description: String
-  isSecret: Boolean
-  isDisabled: Boolean
-  updateReason: String
-}
-
-type SpaceAuthGQLModel {
-  token: String!
-}
-
-input RegisterSpaceGQLInput {
+input ConfigFiltersGQLInput {
   space: String!
   environment: String!
-  isGlobal: Boolean
-}
-
-input LoginSpaceGQLInput {
-  space: String!
-  environment: String!
+  isDisabled: Boolean
 }
 
 type Mutation {
   createConfig(input: CreateConfigGQLInput!): ConfigGQLModel!
   updateConfig(name: String!, input: UpdateConfigGQLInput!): ConfigGQLModel!
-  deleteConfig(name: String!, updateReason: String): Boolean!
-  registerSpace(input: RegisterSpaceGQLInput!): SpaceAuthGQLModel!
-  loginSpace(input: LoginSpaceGQLInput!): SpaceAuthGQLModel!
+  deleteConfig(name: String!, filters: ConfigFiltersGQLInput!, updateReason: String!): Boolean!
+}
+
+input CreateConfigGQLInput {
+  name: String!
+  value: String!
+  environment: String!
+  space: String!
+  description: String
+  isSecret: Boolean!
+  isDisabled: Boolean!
+}
+
+input UpdateConfigGQLInput {
+  name: String!
+  value: String!
+  environment: String!
+  space: String!
+  description: String
+  isSecret: Boolean!
+  isDisabled: Boolean
+  updateReason: String!
 }

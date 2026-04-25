@@ -1,5 +1,4 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
-import { UseGuards } from '@nestjs/common';
 import ConfigGQLModel from './models/config.gql.model';
 import { ListConfigQuery } from '../../../application/use-cases/config/list-config.query';
 import { GetConfigQuery } from '../../../application/use-cases/config/get-config.query';
@@ -8,11 +7,9 @@ import { UpdateConfigCommand } from '../../../application/use-cases/config/updat
 import { DeleteConfigCommand } from '../../../application/use-cases/config/delete-config.command';
 import { CreateConfigGQLInput } from './models/create-config.input';
 import { UpdateConfigGQLInput } from './models/update-config.input';
-import { CurrentSpace, CurrentSpaceContext } from '../../auth/current-space.decorator';
-import { SpaceAuthGuard } from '../../auth/space-auth.guard';
+import { ConfigFiltersGQLInput } from './models/config-filters.input';
 
 @Resolver(() => ConfigGQLModel)
-@UseGuards(SpaceAuthGuard)
 export class ConfigResolver {
   constructor(
     private readonly listConfigUseCase: ListConfigQuery,
@@ -23,27 +20,27 @@ export class ConfigResolver {
   ) {}
 
   @Query(() => [ConfigGQLModel])
-  async getConfigs(@CurrentSpace() currentSpace: CurrentSpaceContext): Promise<ConfigGQLModel[]> {
-    const configs = await this.listConfigUseCase.execute(currentSpace);
+  async getConfigs(@Args('filters', { nullable: true }) filters?: ConfigFiltersGQLInput): Promise<ConfigGQLModel[]> {
+    const configs = await this.listConfigUseCase.execute(filters);
     return configs.map((config) => new ConfigGQLModel(config));
   }
 
   @Query(() => ConfigGQLModel)
-  async getConfig(@Args('name') name: string, @CurrentSpace() currentSpace: CurrentSpaceContext): Promise<ConfigGQLModel> {
-    const config = await this.getConfigUseCase.execute(currentSpace, name);
+  async getConfig(
+    @Args('name') name: string,
+    @Args('filters', { nullable: true }) filters?: ConfigFiltersGQLInput,
+  ): Promise<ConfigGQLModel> {
+    const config = await this.getConfigUseCase.execute(filters || {}, name);
     return new ConfigGQLModel(config);
   }
 
   @Mutation(() => ConfigGQLModel)
-  async createConfig(
-    @Args('input') input: CreateConfigGQLInput,
-    @CurrentSpace() currentSpace: CurrentSpaceContext,
-  ): Promise<ConfigGQLModel> {
+  async createConfig(@Args('input') input: CreateConfigGQLInput): Promise<ConfigGQLModel> {
     const config = await this.createConfigCommand.execute({
       name: input.name,
       value: input.value,
-      environment: currentSpace.environment,
-      space: currentSpace.space,
+      environment: input.environment,
+      space: input.space,
       description: input.description,
       isSecret: input.isSecret,
       isDisabled: input.isDisabled,
@@ -52,12 +49,12 @@ export class ConfigResolver {
   }
 
   @Mutation(() => ConfigGQLModel)
-  async updateConfig(
-    @Args('name') name: string,
-    @Args('input') input: UpdateConfigGQLInput,
-    @CurrentSpace() currentSpace: CurrentSpaceContext,
-  ): Promise<ConfigGQLModel> {
-    const config = await this.updateConfigCommand.execute(currentSpace, name, {
+  async updateConfig(@Args('name') name: string, @Args('input') input: UpdateConfigGQLInput): Promise<ConfigGQLModel> {
+    const filters = {
+      space: input.space,
+      environment: input.environment,
+    };
+    const config = await this.updateConfigCommand.execute(filters, name, {
       name: input.name,
       value: input.value,
       description: input.description,
@@ -71,10 +68,10 @@ export class ConfigResolver {
   @Mutation(() => Boolean)
   async deleteConfig(
     @Args('name') name: string,
-    @Args('updateReason', { nullable: true }) updateReason: string,
-    @CurrentSpace() currentSpace: CurrentSpaceContext,
+    @Args('filters', { nullable: false }) filters?: ConfigFiltersGQLInput,
+    @Args('updateReason', { nullable: false }) updateReason?: string,
   ): Promise<boolean> {
-    await this.deleteConfigCommand.execute(currentSpace, name, updateReason);
+    await this.deleteConfigCommand.execute(filters || {}, name, updateReason);
     return true;
   }
 }
