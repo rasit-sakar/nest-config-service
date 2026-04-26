@@ -11,7 +11,7 @@ export class ConfigHistoryService {
   }
 
   async createHistory(
-    historyData: Pick<ConfigHistory, 'configId' | 'updateReason' | 'oldValue' | 'newValue' | 'changeDate'>,
+    historyData: Pick<ConfigHistory, 'configId' | 'updateReason' | 'oldValue' | 'newValue' | 'changeDate' | 'changedByUser'>,
   ): Promise<void> {
     await this.configHistoryRepository.createHistory(historyData);
   }

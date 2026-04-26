@@ -27,14 +27,8 @@ export class ConfigEntity {
   @Column({ name: 'created_at', type: 'timestamp', nullable: false })
   createdAt: Date;
 
-  @Column({ name: 'created_by', type: 'uuid', nullable: false })
-  createdBy: string;
-
   @Column({ name: 'updated_at', type: 'timestamp', nullable: false })
   updatedAt: Date;
-
-  @Column({ name: 'updated_by', type: 'uuid', nullable: false })
-  updatedBy: string;
 
   @OneToMany(() => ConfigHistoryEntity, (configHistory) => configHistory.config, { nullable: true, eager: false })
   history: ConfigHistoryEntity[];

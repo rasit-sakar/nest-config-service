@@ -5,6 +5,7 @@ import { join } from 'path';
 import { ConfigResolver } from './config/config.resolver';
 import { UserResolver, AuthResolver } from './user/user.resolver';
 import { DomainModule } from '../../application/domain/domain.module';
+import { UseCaseModule } from '../../application/use-cases/use-case.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { DomainModule } from '../../application/domain/domain.module';
       context: ({ req }) => ({ req }),
     }),
     DomainModule,
+    UseCaseModule,
   ],
   providers: [ConfigResolver, UserResolver, AuthResolver],
 })

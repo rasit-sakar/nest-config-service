@@ -4,4 +4,5 @@ export class CreateUserInput {
   secretKey: string;
   secretPassword: string;
   isAdmin: boolean;
+  createdBy: string;
 }

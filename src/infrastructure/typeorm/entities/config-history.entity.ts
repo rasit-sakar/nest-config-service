@@ -27,4 +27,7 @@ export class ConfigHistoryEntity {
 
   @Column({ name: 'change_date', type: 'timestamp' })
   changeDate: Date;
+
+  @Column({ name: 'changed_by_user', type: 'uuid' })
+  changedByUser: string;
 }

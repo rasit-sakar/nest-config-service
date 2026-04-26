@@ -1,4 +1,4 @@
-export interface DefaultConfigFilters {
-  space?: string;
+export interface ListConfigsFilters {
+  space: string;
   isDisabled?: boolean;
 }

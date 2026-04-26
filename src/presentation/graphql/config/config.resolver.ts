@@ -1,4 +1,4 @@
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { UseGuards } from '@nestjs/common';
 import ConfigGQLModel from './models/config.gql.model';
 import { ListConfigQuery } from '../../../application/use-cases/config/list-config.query';
@@ -12,6 +12,7 @@ import { SpaceAuthGuard } from '../../../infrastructure/auth/space-auth.guard';
 import { RequireSpaceAuth } from '../../../infrastructure/auth/require-space-auth.decorator';
 import { UserAuthType } from '../../../application/domain/user/models/user-auth-type';
 import { UniversalAuthGuard } from '../../../infrastructure/auth/universal-auth.guard';
+import { GraphQLContext } from '../graphql-context';
 
 @Resolver(() => ConfigGQLModel)
 @UseGuards(UniversalAuthGuard, SpaceAuthGuard)
@@ -33,18 +34,18 @@ export class ConfigResolver {
 
   @Query(() => ConfigGQLModel)
   @RequireSpaceAuth('space', UserAuthType.READ)
-  async getConfig(
-    @Args('name') name: string,
-    @Args('space') space: string,
-    @Args('isDisabled', { nullable: true }) isDisabled?: boolean,
-  ): Promise<ConfigGQLModel> {
-    const config = await this.getConfigUseCase.execute({ space, isDisabled }, name);
+  async getConfig(@Args('name') name: string, @Args('space') space: string): Promise<ConfigGQLModel> {
+    const config = await this.getConfigUseCase.execute(space, name);
     return new ConfigGQLModel(config);
   }
 
   @Mutation(() => ConfigGQLModel)
   @RequireSpaceAuth('space', UserAuthType.CREATE)
-  async createConfig(@Args('space') space: string, @Args('input') input: CreateConfigGQLInput): Promise<ConfigGQLModel> {
+  async createConfig(
+    @Args('space') space: string,
+    @Args('input') input: CreateConfigGQLInput,
+    @Context() context: GraphQLContext,
+  ): Promise<ConfigGQLModel> {
     const config = await this.createConfigCommand.execute({
       name: input.name,
       value: input.value,
@@ -52,6 +53,7 @@ export class ConfigResolver {
       description: input.description,
       isSecret: input.isSecret,
       isDisabled: input.isDisabled,
+      createdBy: context.req.user.username,
     });
     return new ConfigGQLModel(config);
   }
@@ -62,17 +64,16 @@ export class ConfigResolver {
     @Args('space') space: string,
     @Args('name') name: string,
     @Args('input') input: UpdateConfigGQLInput,
+    @Context() context: GraphQLContext,
   ): Promise<ConfigGQLModel> {
-    const filters = {
-      space,
-    };
-    const config = await this.updateConfigCommand.execute(filters, name, {
+    const config = await this.updateConfigCommand.execute(space, name, {
       name: input.name,
       value: input.value,
       description: input.description,
       isSecret: input.isSecret,
       isDisabled: input.isDisabled,
       updateReason: input.updateReason,
+      updatedBy: context.req.user.username,
     });
     return new ConfigGQLModel(config);
   }
@@ -80,11 +81,12 @@ export class ConfigResolver {
   @Mutation(() => Boolean)
   @RequireSpaceAuth('space', UserAuthType.DELETE)
   async deleteConfig(
+    @Context() context: GraphQLContext,
     @Args('name') name: string,
     @Args('space', { nullable: false }) space: string,
-    @Args('updateReason', { nullable: false }) updateReason?: string,
+    @Args('updateReason', { nullable: false }) updateReason: string,
   ): Promise<boolean> {
-    await this.deleteConfigCommand.execute({ space }, name, updateReason);
+    await this.deleteConfigCommand.execute(space, name, updateReason, context.req.user.username);
     return true;
   }
 }

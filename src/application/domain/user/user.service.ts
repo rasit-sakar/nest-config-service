@@ -18,15 +18,27 @@ export class UserService {
     return this.userRepository.findUserByUsername(username);
   }
 
-  createUser(createUserInput: CreateUserInput) {
+  async createUser(createUserInput: CreateUserInput) {
+    const user = await this.userRepository.findUserByUsername(createUserInput.username);
+    if (user) {
+      throw new Error('User already exists');
+    }
     return this.userRepository.createUser(createUserInput);
   }
 
-  updateUser(username: string, updateUserInput: UpdateUserInput) {
+  async updateUser(username: string, updateUserInput: UpdateUserInput) {
+    const user = await this.userRepository.findUserByUsername(username);
+    if (!user) {
+      throw new Error('User not found');
+    }
     return this.userRepository.updateUser(username, updateUserInput);
   }
 
-  deleteUser(username: string) {
+  async deleteUser(username: string) {
+    const user = await this.userRepository.findUserByUsername(username);
+    if (!user) {
+      throw new Error('User not found');
+    }
     return this.userRepository.deleteUser(username);
   }
 

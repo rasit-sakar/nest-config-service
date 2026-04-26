@@ -20,6 +20,7 @@ export class CreateConfigCommand {
       oldValue: null,
       newValue: JSON.stringify(config),
       changeDate: new Date(),
+      changedByUser: createConfigModel.createdBy,
     });
 
     return config;

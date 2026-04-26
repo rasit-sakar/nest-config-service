@@ -3,7 +3,6 @@ import { ConfigHistoryService } from '../../domain/config-history/config-history
 import { ConfigService } from '../../domain/config/config.service';
 import { UpdateConfigInput } from '../../contracts/update-config.model';
 import { Config } from '../../domain/config/models/config.model';
-import { DefaultConfigFilters } from '../../contracts/default-config-filters.model';
 
 @Injectable()
 export class UpdateConfigCommand {
@@ -12,9 +11,9 @@ export class UpdateConfigCommand {
     private readonly configHistoryService: ConfigHistoryService,
   ) {}
 
-  async execute(defaultFilters: DefaultConfigFilters, name: string, updateConfigModel: UpdateConfigInput): Promise<Config> {
-    const previousConfig = await this.configService.findByName(defaultFilters, name);
-    const updatedConfig = await this.configService.updateByName(defaultFilters, name, updateConfigModel);
+  async execute(space: string, name: string, updateConfigModel: UpdateConfigInput): Promise<Config> {
+    const previousConfig = await this.configService.findByName(space, name);
+    const updatedConfig = await this.configService.updateByName(space, name, updateConfigModel);
 
     await this.configHistoryService.createHistory({
       configId: updatedConfig.id,
@@ -22,6 +21,7 @@ export class UpdateConfigCommand {
       oldValue: JSON.stringify(previousConfig),
       newValue: JSON.stringify(updatedConfig),
       changeDate: new Date(),
+      changedByUser: updateConfigModel.updatedBy,
     });
 
     return updatedConfig;

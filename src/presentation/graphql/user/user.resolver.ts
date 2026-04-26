@@ -10,6 +10,7 @@ import { GetUserQuery } from '../../../application/use-cases/user/get-user.query
 import { CreateUserCommand } from '../../../application/use-cases/user/create-user.command';
 import { UpdateUserCommand } from '../../../application/use-cases/user/update-user.command';
 import { DeleteUserCommand } from '../../../application/use-cases/user/delete-user.command';
+import { Public } from '../../../infrastructure/auth/public-access.decarator';
 
 @ObjectType()
 class AuthResult {
@@ -75,6 +76,7 @@ export class UserResolver {
 export class AuthResolver {
   constructor(private readonly authenticateUser: AuthenticateUser) {}
 
+  @Public()
   @Query(() => AuthResult, { nullable: true })
   async login(
     @Args('username') username: string,

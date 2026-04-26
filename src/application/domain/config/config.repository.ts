@@ -5,7 +5,7 @@ import { ConfigEntity } from '../../../infrastructure/typeorm/entities/config.en
 import { Config } from './models/config.model';
 import { CreateConfigInput } from '../../contracts/create-config.model';
 import { UpdateConfigInput } from '../../contracts/update-config.model';
-import { DefaultConfigFilters } from '../../contracts/default-config-filters.model';
+import { ListConfigsFilters } from '../../contracts/default-config-filters.model';
 
 @Injectable()
 export class ConfigRepository {
@@ -14,11 +14,15 @@ export class ConfigRepository {
     private readonly configRepository: Repository<ConfigEntity>,
   ) {}
 
-  async findAll(filters?: DefaultConfigFilters): Promise<Config[]> {
-    const where = {
-      isDisabled: filters?.isDisabled ?? undefined,
-      space: undefined,
-    };
+  async findAll(filters: ListConfigsFilters): Promise<Config[]> {
+    const where =
+      filters?.isDisabled !== undefined
+        ? {
+            space: filters.space,
+            isDisabled: filters.isDisabled,
+          }
+        : { space: filters.space };
+
     if (filters?.space) where.space = filters.space;
     const configs = await this.configRepository.find({
       where,
@@ -27,12 +31,11 @@ export class ConfigRepository {
     return configs.map((config) => this.mapToDTO(config));
   }
 
-  async findOneByName(defaultFilters: DefaultConfigFilters, name: string): Promise<Config | null> {
+  async findOneByName(space: string, name: string): Promise<Config | null> {
     const configEntity = await this.configRepository.findOne({
       where: {
         name,
-        isDisabled: defaultFilters.isDisabled ?? undefined,
-        space: defaultFilters.space,
+        space: space,
       },
       relations: ['history'],
     });
@@ -56,11 +59,10 @@ export class ConfigRepository {
     return this.mapToDTO(configEntity);
   }
 
-  async updateByName(defaultFilters: DefaultConfigFilters, name: string, updateConfig: UpdateConfigInput): Promise<Config> {
+  async updateByName(space: string, name: string, updateConfig: UpdateConfigInput): Promise<Config> {
     const configEntity = await this.configRepository.findOneBy({
       name,
-      isDisabled: defaultFilters.isDisabled ?? false,
-      space: defaultFilters.space,
+      space,
     });
     if (!configEntity) {
       throw new NotFoundException(`Config with name ${name} not found`);
@@ -77,11 +79,10 @@ export class ConfigRepository {
     return this.mapToDTO(configEntity);
   }
 
-  async deleteByName(defaultFilters: DefaultConfigFilters, name: string): Promise<void> {
+  async deleteByName(space: string, name: string): Promise<void> {
     await this.configRepository.delete({
       name,
-      isDisabled: defaultFilters.isDisabled ?? false,
-      space: defaultFilters.space,
+      space,
     });
   }
 

@@ -26,8 +26,9 @@ type UserGQLModel {
 
 type Query {
   getConfigs(space: String!, isDisabled: Boolean): [ConfigGQLModel!]!
-  getConfig(name: String!, space: String!, isDisabled: Boolean): ConfigGQLModel!
+  getConfig(name: String!, space: String!): ConfigGQLModel!
   getUser(username: String!): UserGQLModel!
+  login(username: String!, secretKey: String!, secretPassword: String!): AuthResult
 }
 
 type Mutation {
@@ -37,7 +38,6 @@ type Mutation {
   createUser(input: CreateUserGQLInput!): UserGQLModel!
   updateUser(username: String!, input: UpdateUserGQLInput!): UserGQLModel!
   deleteUser(username: String!): Boolean!
-  login(username: String!, secretKey: String!, secretPassword: String!): AuthResult
 }
 
 input CreateConfigGQLInput {

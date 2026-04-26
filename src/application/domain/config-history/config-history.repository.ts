@@ -17,7 +17,7 @@ export class ConfigHistoryRepository {
   }
 
   async createHistory(
-    historyData: Pick<ConfigHistory, 'configId' | 'updateReason' | 'oldValue' | 'newValue' | 'changeDate'>,
+    historyData: Pick<ConfigHistory, 'configId' | 'updateReason' | 'oldValue' | 'newValue' | 'changeDate' | 'changedByUser'>,
   ): Promise<void> {
     const configEntity = this.configHistoryRepository.create({
       config: { id: historyData.configId },
@@ -25,6 +25,7 @@ export class ConfigHistoryRepository {
       oldValue: historyData.oldValue,
       newValue: historyData.newValue,
       changeDate: historyData.changeDate,
+      changedByUser: historyData.changedByUser,
     });
     await this.configHistoryRepository.save(configEntity);
   }
@@ -37,6 +38,7 @@ export class ConfigHistoryRepository {
       oldValue: entity.oldValue,
       newValue: entity.newValue,
       changeDate: entity.changeDate,
+      changedByUser: entity.changedByUser,
     };
   }
 }

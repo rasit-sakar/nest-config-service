@@ -7,4 +7,5 @@ export class UpdateConfigInput {
   isSecret?: boolean;
   isDisabled?: boolean;
   updateReason: string;
+  updatedBy: string;
 }

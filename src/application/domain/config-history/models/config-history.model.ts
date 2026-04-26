@@ -5,4 +5,5 @@ export interface ConfigHistory {
   oldValue: string;
   newValue: string;
   changeDate: Date;
+  changedByUser: string;
 }

@@ -3,4 +3,5 @@ export class UpdateUserInput {
   secretKey?: string;
   secretPassword?: string;
   isAdmin?: boolean;
+  updatedBy: string;
 }

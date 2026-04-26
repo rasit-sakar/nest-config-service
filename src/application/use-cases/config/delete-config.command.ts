@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigHistoryService } from '../../domain/config-history/config-history.service';
 import { ConfigService } from '../../domain/config/config.service';
-import { DefaultConfigFilters } from '../../contracts/default-config-filters.model';
 
 @Injectable()
 export class DeleteConfigCommand {
@@ -10,9 +9,9 @@ export class DeleteConfigCommand {
     private readonly configHistoryService: ConfigHistoryService,
   ) {}
 
-  async execute(defaultFilters: DefaultConfigFilters, name: string, updateReason: string): Promise<void> {
-    const config = await this.configService.findByName(defaultFilters, name);
-    await this.configService.deleteByName(defaultFilters, name);
+  async execute(space: string, name: string, updateReason: string, updatedBy: string): Promise<void> {
+    const config = await this.configService.findByName(space, name);
+    await this.configService.deleteByName(space, name);
 
     await this.configHistoryService.createHistory({
       configId: config.id,
@@ -20,6 +19,7 @@ export class DeleteConfigCommand {
       oldValue: JSON.stringify(config),
       newValue: JSON.stringify(''),
       changeDate: new Date(),
+      changedByUser: updatedBy,
     });
   }
 }
