@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, RelationId } from 'typeorm';
 import { ConfigEntity } from './config.entity';
 
 @Entity('config_history')
@@ -6,8 +6,11 @@ export class ConfigHistoryEntity {
   @PrimaryGeneratedColumn({ name: 'id' })
   id: string;
 
-  @ManyToOne(() => ConfigEntity, (config) => config.history)
+  @ManyToOne(() => ConfigEntity, (config) => config.history, { nullable: false })
   @JoinColumn({ name: 'config_id' })
+  config: ConfigEntity;
+
+  @RelationId((history: ConfigHistoryEntity) => history.config)
   configId: string;
 
   @Column({ name: 'update_reason', type: 'text' })

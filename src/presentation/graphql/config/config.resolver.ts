@@ -11,9 +11,10 @@ import { UpdateConfigGQLInput } from './models/update-config.input';
 import { SpaceAuthGuard } from '../../../infrastructure/auth/space-auth.guard';
 import { RequireSpaceAuth } from '../../../infrastructure/auth/require-space-auth.decorator';
 import { UserAuthType } from '../../../application/domain/user/models/user-auth-type';
+import { UniversalAuthGuard } from '../../../infrastructure/auth/universal-auth.guard';
 
 @Resolver(() => ConfigGQLModel)
-@UseGuards(SpaceAuthGuard)
+@UseGuards(UniversalAuthGuard, SpaceAuthGuard)
 export class ConfigResolver {
   constructor(
     private readonly listConfigUseCase: ListConfigQuery,

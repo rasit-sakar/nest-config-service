@@ -6,17 +6,12 @@ import { Reflector } from '@nestjs/core';
 import { GqlExecutionContext } from '@nestjs/graphql';
 import { REQUIRE_SPACE_AUTH, RequireSpaceAuthParams } from './require-space-auth.decorator';
 import { UserContext } from '../../application/domain/user/models/user-context';
-import { IS_PUBLIC_KEY } from './public-access.decarator';
 
 @Injectable()
 export class SpaceAuthGuard implements CanActivate {
   constructor(private reflector: Reflector) {}
 
   canActivate(context: ExecutionContext): boolean {
-    const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [context.getHandler(), context.getClass()]);
-    if (isPublic) {
-      return true;
-    }
     const requireAuthParams = this.reflector.get<RequireSpaceAuthParams>(REQUIRE_SPACE_AUTH, context.getHandler());
     if (requireAuthParams?.authType === undefined || requireAuthParams?.spaceID === undefined) {
       throw new ForbiddenException('No space auth metadata found');

@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, RelationId } from 'typeorm';
+import { UserEntity } from './user.entity';
 import { UserAuthType } from '../../../application/domain/user/models/user-auth-type';
 
 @Entity('user_space_auths')
@@ -6,7 +7,11 @@ export class UserSpaceAuthEntity {
   @PrimaryGeneratedColumn({ name: 'id' })
   id: string;
 
-  @Column({ name: 'user_id', type: 'uuid', nullable: false })
+  @ManyToOne(() => UserEntity, (user) => user.spaceAuths, { nullable: false })
+  @JoinColumn({ name: 'user_id' })
+  user: UserEntity;
+
+  @RelationId((auth: UserSpaceAuthEntity) => auth.user)
   userId: string;
 
   @Column({ name: 'space_name', type: 'varchar', length: 50, nullable: false })

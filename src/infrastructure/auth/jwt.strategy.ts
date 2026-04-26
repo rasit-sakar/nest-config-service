@@ -19,6 +19,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
   validate(payload: UserContext) {
     // Returns the object that becomes 'req.user'
-    return { username: payload.username, spaceAuths: payload.spaceAuths, isAdmin: payload.isAdmin };
+    return { username: payload.username, spaceAuths: payload.spaceAuths, isAdmin: payload.isAdmin, userId: payload.userId };
   }
 }

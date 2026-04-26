@@ -36,6 +36,6 @@ export class ConfigEntity {
   @Column({ name: 'updated_by', type: 'uuid', nullable: false })
   updatedBy: string;
 
-  @OneToMany(() => ConfigHistoryEntity, (configHistory) => configHistory.configId, { nullable: true, eager: false })
+  @OneToMany(() => ConfigHistoryEntity, (configHistory) => configHistory.config, { nullable: true, eager: false })
   history: ConfigHistoryEntity[];
 }

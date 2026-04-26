@@ -20,7 +20,7 @@ export class ConfigHistoryRepository {
     historyData: Pick<ConfigHistory, 'configId' | 'updateReason' | 'oldValue' | 'newValue' | 'changeDate'>,
   ): Promise<void> {
     const configEntity = this.configHistoryRepository.create({
-      configId: historyData.configId,
+      config: { id: historyData.configId },
       updateReason: historyData.updateReason,
       oldValue: historyData.oldValue,
       newValue: historyData.newValue,

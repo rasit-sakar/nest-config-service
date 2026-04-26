@@ -21,6 +21,6 @@ export class UserEntity {
   @Column({ name: 'is_admin', type: 'boolean', nullable: false, default: false })
   isAdmin: boolean;
 
-  @OneToMany(() => UserSpaceAuthEntity, (spaceAuth) => spaceAuth.userId)
+  @OneToMany(() => UserSpaceAuthEntity, (spaceAuth) => spaceAuth.user)
   spaceAuths: UserSpaceAuthEntity[];
 }

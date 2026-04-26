@@ -12,6 +12,8 @@ import { DomainModule } from '../../application/domain/domain.module';
       driver: ApolloDriver,
       graphiql: false,
       autoSchemaFile: join(process.cwd(), 'src/presentation/graphql/schema.gql'),
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      context: ({ req }) => ({ req }),
     }),
     DomainModule,
   ],
