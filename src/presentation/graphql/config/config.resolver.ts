@@ -1,4 +1,5 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { UseGuards } from '@nestjs/common';
 import ConfigGQLModel from './models/config.gql.model';
 import { ListConfigQuery } from '../../../application/use-cases/config/list-config.query';
 import { GetConfigQuery } from '../../../application/use-cases/config/get-config.query';
@@ -7,9 +8,13 @@ import { UpdateConfigCommand } from '../../../application/use-cases/config/updat
 import { DeleteConfigCommand } from '../../../application/use-cases/config/delete-config.command';
 import { CreateConfigGQLInput } from './models/create-config.input';
 import { UpdateConfigGQLInput } from './models/update-config.input';
-import { ConfigFiltersGQLInput } from './models/config-filters.input';
+import { UniversalAuthGuard } from '../../auth/auth.guard';
+import { SpaceAuthGuard } from '../../auth/space-auth.guard';
+import { RequireSpaceAuth } from '../../auth/require-space-auth.decorator';
+import { UserAuthType } from '../../../application/domain/user/models/user-auth-type';
 
 @Resolver(() => ConfigGQLModel)
+@UseGuards(UniversalAuthGuard, SpaceAuthGuard)
 export class ConfigResolver {
   constructor(
     private readonly listConfigUseCase: ListConfigQuery,
@@ -20,27 +25,30 @@ export class ConfigResolver {
   ) {}
 
   @Query(() => [ConfigGQLModel])
-  async getConfigs(@Args('filters', { nullable: true }) filters?: ConfigFiltersGQLInput): Promise<ConfigGQLModel[]> {
-    const configs = await this.listConfigUseCase.execute(filters);
+  @RequireSpaceAuth('space', UserAuthType.READ)
+  async getConfigs(@Args('space') space: string, @Args('isDisabled', { nullable: true }) isDisabled?: boolean): Promise<ConfigGQLModel[]> {
+    const configs = await this.listConfigUseCase.execute({ space, isDisabled });
     return configs.map((config) => new ConfigGQLModel(config));
   }
 
   @Query(() => ConfigGQLModel)
+  @RequireSpaceAuth('space', UserAuthType.READ)
   async getConfig(
     @Args('name') name: string,
-    @Args('filters', { nullable: true }) filters?: ConfigFiltersGQLInput,
+    @Args('space') space: string,
+    @Args('isDisabled', { nullable: true }) isDisabled?: boolean,
   ): Promise<ConfigGQLModel> {
-    const config = await this.getConfigUseCase.execute(filters || {}, name);
+    const config = await this.getConfigUseCase.execute({ space, isDisabled }, name);
     return new ConfigGQLModel(config);
   }
 
   @Mutation(() => ConfigGQLModel)
-  async createConfig(@Args('input') input: CreateConfigGQLInput): Promise<ConfigGQLModel> {
+  @RequireSpaceAuth('space', UserAuthType.CREATE)
+  async createConfig(@Args('space') space: string, @Args('input') input: CreateConfigGQLInput): Promise<ConfigGQLModel> {
     const config = await this.createConfigCommand.execute({
       name: input.name,
       value: input.value,
-      environment: input.environment,
-      space: input.space,
+      space,
       description: input.description,
       isSecret: input.isSecret,
       isDisabled: input.isDisabled,
@@ -49,10 +57,14 @@ export class ConfigResolver {
   }
 
   @Mutation(() => ConfigGQLModel)
-  async updateConfig(@Args('name') name: string, @Args('input') input: UpdateConfigGQLInput): Promise<ConfigGQLModel> {
+  @RequireSpaceAuth('space', UserAuthType.UPDATE)
+  async updateConfig(
+    @Args('space') space: string,
+    @Args('name') name: string,
+    @Args('input') input: UpdateConfigGQLInput,
+  ): Promise<ConfigGQLModel> {
     const filters = {
-      space: input.space,
-      environment: input.environment,
+      space,
     };
     const config = await this.updateConfigCommand.execute(filters, name, {
       name: input.name,
@@ -66,12 +78,13 @@ export class ConfigResolver {
   }
 
   @Mutation(() => Boolean)
+  @RequireSpaceAuth('space', UserAuthType.DELETE)
   async deleteConfig(
     @Args('name') name: string,
-    @Args('filters', { nullable: false }) filters?: ConfigFiltersGQLInput,
+    @Args('space', { nullable: false }) space: string,
     @Args('updateReason', { nullable: false }) updateReason?: string,
   ): Promise<boolean> {
-    await this.deleteConfigCommand.execute(filters || {}, name, updateReason);
+    await this.deleteConfigCommand.execute({ space }, name, updateReason);
     return true;
   }
 }

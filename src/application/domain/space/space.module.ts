@@ -1,13 +1,12 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserEntity } from '../../../infrastructure/typeorm/entities/user.entity';
-import { UserSpaceAuthEntity } from '../../../infrastructure/typeorm/entities/user-space-auth.entity';
-import { UserService } from './space.service';
-import { UserRepository } from './space.repository';
+import { SpaceService } from './space.service';
+import { SpaceRepository } from './space.repository';
+import { SpaceEntity } from '../../../infrastructure/typeorm/entities/space.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([UserEntity, UserSpaceAuthEntity])],
-  providers: [UserRepository, UserService],
-  exports: [UserService],
+  imports: [TypeOrmModule.forFeature([SpaceEntity])],
+  providers: [SpaceService, SpaceRepository],
+  exports: [SpaceService],
 })
 export class SpaceModule {}

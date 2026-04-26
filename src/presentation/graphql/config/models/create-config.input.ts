@@ -8,12 +8,6 @@ export class CreateConfigGQLInput {
   @Field()
   value: string;
 
-  @Field()
-  environment: string;
-
-  @Field()
-  space: string;
-
   @Field({ nullable: true })
   description?: string;
 

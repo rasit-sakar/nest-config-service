@@ -8,12 +8,6 @@ export class UpdateConfigGQLInput {
   @Field({ nullable: false })
   value: string;
 
-  @Field({ nullable: false })
-  environment: string;
-
-  @Field({ nullable: false })
-  space: string;
-
   @Field({ nullable: true })
   description?: string;
 

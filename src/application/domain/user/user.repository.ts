@@ -16,18 +16,18 @@ export class UserRepository {
     private readonly userSpaceAuthRepository: Repository<UserSpaceAuthEntity>,
   ) {}
 
-  async findUserByUsername(username: string): Promise<User | null> {
+  async findUserByUsername(userName: string): Promise<User | null> {
     const userEntity = await this.userRepository.findOne({
-      where: { username },
+      where: { userName },
       relations: ['spaceAuths'],
     });
     if (!userEntity) return null;
     return this.mapToDTO(userEntity);
   }
 
-  async getToken(username: string): Promise<{ secretKey: string; secretPassword: string } | null> {
+  async getToken(userName: string): Promise<{ secretKey: string; secretPassword: string } | null> {
     const userEntity = await this.userRepository.findOne({
-      where: { username },
+      where: { userName },
     });
     if (!userEntity) return null;
     return {
@@ -38,7 +38,7 @@ export class UserRepository {
 
   async createUser(createUserInput: CreateUserInput): Promise<User> {
     const userEntity = this.userRepository.create({
-      username: createUserInput.username,
+      userName: createUserInput.userName,
       description: createUserInput.description,
       secretKey: createUserInput.secretKey,
       secretPassword: createUserInput.secretPassword,
@@ -48,9 +48,9 @@ export class UserRepository {
     return this.mapToDTO(savedUser);
   }
 
-  async updateUser(username: string, updateUserInput: Partial<CreateUserInput>): Promise<User> {
+  async updateUser(userName: string, updateUserInput: Partial<CreateUserInput>): Promise<User> {
     const userEntity = await this.userRepository.findOne({
-      where: { username },
+      where: { userName },
     });
     if (!userEntity) throw new Error('User not found');
     if (updateUserInput.description !== undefined) userEntity.description = updateUserInput.description;
@@ -67,7 +67,6 @@ export class UserRepository {
       this.userSpaceAuthRepository.create({
         userId,
         spaceName: spaceAuth.spaceName,
-        environment: spaceAuth.environment,
         auth: spaceAuth.userAuthType,
       }),
     );
@@ -77,7 +76,7 @@ export class UserRepository {
   mapToDTO(userEntity: UserEntity): User {
     const user = {
       id: userEntity.id,
-      username: userEntity.username,
+      userName: userEntity.userName,
       description: userEntity.description,
       isAdmin: userEntity.isAdmin,
       spaceAuths: userEntity.spaceAuths.map((spaceAuthEntity) => this.mapToAuthDTO(spaceAuthEntity)),
@@ -88,7 +87,6 @@ export class UserRepository {
   mapToAuthDTO(spaceAuthEntity: UserSpaceAuthEntity): UserSpaceAuth {
     const spaceAuth: UserSpaceAuth = {
       spaceName: spaceAuthEntity.spaceName,
-      environment: spaceAuthEntity.environment,
       userAuthType: spaceAuthEntity.auth,
     };
     return spaceAuth;

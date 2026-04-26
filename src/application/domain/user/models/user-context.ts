@@ -1,9 +1,8 @@
 import { UserSpaceAuth } from './user-space-auth.model';
 
-export interface User {
-  id: string;
+export interface UserContext {
+  userId: string;
   userName: string;
-  description: string;
-  isAdmin: boolean;
   spaceAuths: UserSpaceAuth[];
+  isAdmin: boolean;
 }

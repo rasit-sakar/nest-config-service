@@ -18,11 +18,8 @@ export class ConfigRepository {
     const where = {
       isDisabled: filters?.isDisabled ?? undefined,
       space: undefined,
-      environment: undefined,
     };
     if (filters?.space) where.space = filters.space;
-    if (filters?.environment) where.environment = filters.environment;
-
     const configs = await this.configRepository.find({
       where,
       relations: ['history'],
@@ -36,7 +33,6 @@ export class ConfigRepository {
         name,
         isDisabled: defaultFilters.isDisabled ?? undefined,
         space: defaultFilters.space,
-        environment: defaultFilters.environment,
       },
       relations: ['history'],
     });
@@ -49,7 +45,6 @@ export class ConfigRepository {
     const configEntity = this.configRepository.create({
       name: config.name,
       value: config.value,
-      environment: config.environment,
       space: config.space,
       description: config.description,
       isDisabled: config.isDisabled,
@@ -66,7 +61,6 @@ export class ConfigRepository {
       name,
       isDisabled: defaultFilters.isDisabled ?? false,
       space: defaultFilters.space,
-      environment: defaultFilters.environment,
     });
     if (!configEntity) {
       throw new NotFoundException(`Config with name ${name} not found`);
@@ -88,7 +82,6 @@ export class ConfigRepository {
       name,
       isDisabled: defaultFilters.isDisabled ?? false,
       space: defaultFilters.space,
-      environment: defaultFilters.environment,
     });
   }
 
@@ -97,7 +90,6 @@ export class ConfigRepository {
       id: configEntity.id,
       name: configEntity.name,
       value: configEntity.value,
-      environment: configEntity.environment,
       space: configEntity.space,
       description: configEntity.description,
       isSecret: configEntity.isSecret,

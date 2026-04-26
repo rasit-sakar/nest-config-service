@@ -15,9 +15,6 @@ export class ConfigEntity {
   @Column({ name: 'space_name', type: 'varchar', length: 50, nullable: false })
   space: string;
 
-  @Column({ name: 'environment_name', type: 'varchar', length: 20, nullable: false })
-  environment: string;
-
   @Column({ name: 'description', type: 'text', nullable: true })
   description?: string;
 
@@ -30,8 +27,14 @@ export class ConfigEntity {
   @Column({ name: 'created_at', type: 'timestamp', nullable: false })
   createdAt: Date;
 
+  @Column({ name: 'created_by', type: 'uuid', nullable: false })
+  createdBy: string;
+
   @Column({ name: 'updated_at', type: 'timestamp', nullable: false })
   updatedAt: Date;
+
+  @Column({ name: 'updated_by', type: 'uuid', nullable: false })
+  updatedBy: string;
 
   @OneToMany(() => ConfigHistoryEntity, (configHistory) => configHistory.configId, { nullable: true, eager: false })
   history: ConfigHistoryEntity[];

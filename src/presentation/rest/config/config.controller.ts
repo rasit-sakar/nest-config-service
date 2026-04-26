@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
 import { ListAllConfigResponse } from './models/list-all-config.model';
 import { ListConfigQuery } from '../../../application/use-cases/config/list-config.query';
 import { GetConfigQuery } from '../../../application/use-cases/config/get-config.query';
@@ -9,8 +9,13 @@ import { CreateConfigRequest, CreateConfigResponse } from './models/create-confi
 import { UpdateConfigRequest, UpdateConfigResponse } from './models/update-config.model';
 import { GetConfigResponse } from './models/get-config.model';
 import { DeleteConfigResponse } from './models/delete-config.model';
+import { UniversalAuthGuard } from '../../auth/auth.guard';
+import { SpaceAuthGuard } from '../../auth/space-auth.guard';
+import { RequireSpaceAuth } from '../../auth/require-space-auth.decorator';
+import { UserAuthType } from '../../../application/domain/user/models/user-auth-type';
 
 @Controller('config')
+@UseGuards(UniversalAuthGuard, SpaceAuthGuard)
 export class ConfigController {
   constructor(
     private readonly listConfigUseCase: ListConfigQuery,
@@ -20,32 +25,26 @@ export class ConfigController {
     private readonly deleteConfigCommand: DeleteConfigCommand,
   ) {}
 
-  @Get(':space/:environment')
-  async list(@Param('space') space: string, @Param('environment') environment: string): Promise<ListAllConfigResponse> {
-    const configs = await this.listConfigUseCase.execute({ space, environment });
+  @Get(':space')
+  @RequireSpaceAuth('space', UserAuthType.READ)
+  async list(@Param('space') space: string): Promise<ListAllConfigResponse> {
+    const configs = await this.listConfigUseCase.execute({ space });
     return { data: configs, success: true };
   }
 
-  @Get(':space/:environment/:name')
-  async getById(
-    @Param('space') space: string,
-    @Param('environment') environment: string,
-    @Param('name') name: string,
-  ): Promise<GetConfigResponse> {
-    const config = await this.getConfigUseCase.execute({ space, environment }, name);
+  @Get(':space/:name')
+  @RequireSpaceAuth('space', UserAuthType.READ)
+  async getById(@Param('space') space: string, @Param('name') name: string): Promise<GetConfigResponse> {
+    const config = await this.getConfigUseCase.execute({ space }, name);
     return { data: config, success: true };
   }
 
-  @Post(':space/:environment')
-  async create(
-    @Param('space') space: string,
-    @Param('environment') environment: string,
-    @Body() createConfigRequest: CreateConfigRequest,
-  ): Promise<CreateConfigResponse> {
+  @Post(':space')
+  @RequireSpaceAuth('space', UserAuthType.CREATE)
+  async create(@Param('space') space: string, @Body() createConfigRequest: CreateConfigRequest): Promise<CreateConfigResponse> {
     const config = await this.createConfigCommand.execute({
       name: createConfigRequest.name,
       value: createConfigRequest.value,
-      environment: environment,
       isSecret: createConfigRequest.isSecret,
       space: space,
       description: createConfigRequest.description,
@@ -55,14 +54,14 @@ export class ConfigController {
     return { data: config, success: true };
   }
 
-  @Put(':space/:environment/:name')
+  @Put(':space/:name')
+  @RequireSpaceAuth('space', UserAuthType.UPDATE)
   async update(
     @Param('space') space: string,
-    @Param('environment') environment: string,
     @Param('name') name: string,
     @Body() updateConfigRequest: UpdateConfigRequest,
   ): Promise<UpdateConfigResponse> {
-    const config = await this.updateConfigCommand.execute({ space, environment }, name, {
+    const config = await this.updateConfigCommand.execute({ space }, name, {
       name: updateConfigRequest.name,
       value: updateConfigRequest.value,
       description: updateConfigRequest.description,
@@ -74,14 +73,14 @@ export class ConfigController {
     return { data: config, success: true };
   }
 
-  @Delete(':space/:environment/:name')
+  @Delete(':space/:name')
+  @RequireSpaceAuth('space', UserAuthType.DELETE)
   async remove(
     @Param('space') space: string,
-    @Param('environment') environment: string,
     @Param('name') name: string,
     @Query('updateReason') updateReason?: string,
   ): Promise<DeleteConfigResponse> {
-    await this.deleteConfigCommand.execute({ space, environment }, name, updateReason);
+    await this.deleteConfigCommand.execute({ space }, name, updateReason);
     return { data: true, success: true };
   }
 }
