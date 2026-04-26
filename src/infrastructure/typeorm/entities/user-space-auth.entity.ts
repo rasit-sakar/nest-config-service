@@ -11,14 +11,11 @@ export class UserSpaceAuthEntity {
   @JoinColumn({ name: 'user_id' })
   user: UserEntity;
 
-  @RelationId((auth: UserSpaceAuthEntity) => auth.user)
+  @Column({ name: 'user_id', type: 'uuid', nullable: false })
   userId: string;
 
   @Column({ name: 'space_name', type: 'varchar', length: 50, nullable: false })
   spaceName: string;
-
-  @Column({ name: 'environment', type: 'varchar', length: 20, nullable: false })
-  environment: string;
 
   @Column({ name: 'auth', type: 'enum', enum: UserAuthType, nullable: false })
   auth: UserAuthType;

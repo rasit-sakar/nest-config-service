@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { UserRepository } from './user.repository';
 import { CreateUserInput } from '../../contracts/create-user';
 import { UpdateUserInput } from '../../contracts/update-user.model';
@@ -7,6 +7,8 @@ import { UserContext } from './models/user-context';
 import { AppConfig } from '../../../infrastructure/config/app.config';
 import { ConfigService } from '@nestjs/config';
 import { AuthenticateInput } from '../../contracts/authenticate.model';
+import { User } from './models/user.model';
+import { AssignSpaceAuthsInput } from '../../contracts/assign-space-auths.model';
 
 @Injectable()
 export class UserService {
@@ -74,5 +76,18 @@ export class UserService {
       .setExpirationTime(expiredAt)
       .sign(new TextEncoder().encode(appConfig?.jwtSecret));
     return { jwtToken, expiredAt };
+  }
+
+  async assignSpaceAuthsToUser(assignSpaceAuthsInput: AssignSpaceAuthsInput): Promise<User> {
+    const user = await this.userRepository.findUserByUsername(assignSpaceAuthsInput.username);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    await this.userRepository.assingnSpaceAuthToUser(user.id, assignSpaceAuthsInput.spaceAuths);
+    const updatedUser = await this.userRepository.findUserByUsername(assignSpaceAuthsInput.username);
+    if (!updatedUser) {
+      throw new NotFoundException('User not found after updating space auths');
+    }
+    return updatedUser;
   }
 }

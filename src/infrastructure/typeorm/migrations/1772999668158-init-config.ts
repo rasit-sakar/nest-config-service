@@ -25,7 +25,6 @@ export class NewMigration1772999668158 implements MigrationInterface {
       id uuid DEFAULT gen_random_uuid() PRIMARY KEY UNIQUE,
       user_id uuid NOT NULL,
       space_name varchar(50) NOT NULL,
-      environment varchar(20) NOT NULL,
       auth varchar NOT NULL
     )`);
 
@@ -39,9 +38,7 @@ export class NewMigration1772999668158 implements MigrationInterface {
       is_disabled boolean NOT NULL DEFAULT false,
       is_secret boolean NOT NULL DEFAULT false,
       created_at timestamp NOT NULL,
-      created_by uuid NOT NULL,
-      updated_at timestamp NOT NULL,
-      updated_by uuid NOT NULL
+      updated_at timestamp NOT NULL
     )`);
 
     // Create config_history table
@@ -51,7 +48,7 @@ export class NewMigration1772999668158 implements MigrationInterface {
       update_reason text,
       old_value jsonb,
       new_value jsonb,
-      changed_by varchar(255),
+      changed_by_user varchar(255),
       change_date timestamp NOT NULL
     )`);
 

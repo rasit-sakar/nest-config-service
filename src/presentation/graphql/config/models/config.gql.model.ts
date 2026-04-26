@@ -1,7 +1,7 @@
 import { Field, ObjectType } from '@nestjs/graphql';
 import { Config } from '../../../../application/domain/config/models/config.model';
 
-@ObjectType()
+@ObjectType({ description: 'Configuration item' })
 class ConfigGQLModel {
   @Field()
   id: string;

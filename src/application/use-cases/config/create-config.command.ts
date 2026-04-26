@@ -12,12 +12,16 @@ export class CreateConfigCommand {
   ) {}
 
   async execute(createConfigModel: CreateConfigInput): Promise<Config> {
+    const existingConfig = await this.configService.findByName(createConfigModel.space, createConfigModel.name);
+    if (existingConfig) {
+      throw new Error('Config already exists');
+    }
     const config = await this.configService.create(createConfigModel);
 
     await this.configHistoryService.createHistory({
       configId: config.id,
       updateReason: 'Initial creation',
-      oldValue: null,
+      oldValue: '',
       newValue: JSON.stringify(config),
       changeDate: new Date(),
       changedByUser: createConfigModel.createdBy,

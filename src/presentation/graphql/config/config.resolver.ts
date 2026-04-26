@@ -1,5 +1,5 @@
 import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
-import { UseGuards } from '@nestjs/common';
+import { NotFoundException, UseGuards } from '@nestjs/common';
 import ConfigGQLModel from './models/config.gql.model';
 import { ListConfigQuery } from '../../../application/use-cases/config/list-config.query';
 import { GetConfigQuery } from '../../../application/use-cases/config/get-config.query';
@@ -34,8 +34,11 @@ export class ConfigResolver {
 
   @Query(() => ConfigGQLModel)
   @RequireSpaceAuth('space', UserAuthType.READ)
-  async getConfig(@Args('name') name: string, @Args('space') space: string): Promise<ConfigGQLModel> {
+  async getConfig(@Args('name') name: string, @Args('space') space: string): Promise<ConfigGQLModel | null> {
     const config = await this.getConfigUseCase.execute(space, name);
+    if (!config) {
+      throw new NotFoundException(`Config with name ${name} not found in space ${space}`);
+    }
     return new ConfigGQLModel(config);
   }
 

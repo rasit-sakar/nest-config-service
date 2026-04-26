@@ -87,7 +87,7 @@ export class UserRepository {
       username: userEntity.username,
       description: userEntity.description,
       isAdmin: userEntity.isAdmin,
-      spaceAuths: userEntity.spaceAuths.map((spaceAuthEntity) => this.mapToAuthDTO(spaceAuthEntity)),
+      spaceAuths: userEntity.spaceAuths?.map((spaceAuthEntity) => this.mapToAuthDTO(spaceAuthEntity)),
     };
     return user;
   }

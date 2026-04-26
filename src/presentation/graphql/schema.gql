@@ -2,6 +2,7 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+"""Configuration item"""
 type ConfigGQLModel {
   id: String!
   name: String!
@@ -22,13 +23,19 @@ type UserGQLModel {
   username: String!
   description: String!
   isAdmin: Boolean!
+  spaceAuths: [SpaceAuthGQLModel!]!
+}
+
+type SpaceAuthGQLModel {
+  spaceName: String!
+  userAuthType: String!
 }
 
 type Query {
   getConfigs(space: String!, isDisabled: Boolean): [ConfigGQLModel!]!
   getConfig(name: String!, space: String!): ConfigGQLModel!
   getUser(username: String!): UserGQLModel!
-  login(username: String!, secretKey: String!, secretPassword: String!): AuthResult
+  authenticate(username: String!, secretKey: String!, secretPassword: String!): AuthResult
 }
 
 type Mutation {
@@ -38,6 +45,7 @@ type Mutation {
   createUser(input: CreateUserGQLInput!): UserGQLModel!
   updateUser(username: String!, input: UpdateUserGQLInput!): UserGQLModel!
   deleteUser(username: String!): Boolean!
+  assignSpaceAuths(username: String!, input: AssignSpaceAuthsGQLInput!): UserGQLModel!
 }
 
 input CreateConfigGQLInput {
@@ -70,4 +78,13 @@ input UpdateUserGQLInput {
   secretKey: String
   secretPassword: String
   isAdmin: Boolean
+}
+
+input AssignSpaceAuthsGQLInput {
+  spaceAuths: [SpaceAuthGQLInput!]!
+}
+
+input SpaceAuthGQLInput {
+  spaceName: String!
+  userAuthType: String!
 }
