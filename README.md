@@ -384,7 +384,7 @@ User
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│ User calls login(username, secretKey, secretPassword)       │
+│ User calls authenticate(username, secretKey, secretPassword)       │
 └─────────────────┬───────────────────────────────────────────┘
                   │
 ┌─────────────────▼───────────────────────────────────────────┐
@@ -413,7 +413,7 @@ User
 - **UniversalAuthGuard**: Validates JWT token on all requests
 - **AdminGuard**: Checks if user.isAdmin = true (for admin operations)
 - **SpaceAuthGuard**: Validates user has required permission in specific space
-- **@Public()**: Bypasses auth for public operations (login, etc.)
+- **@Public()**: Bypasses auth for public operations (authenticate, etc.)
 
 ---
 
@@ -640,7 +640,7 @@ mutation {
 #### Authenticate User
 ```graphql
 query {
-  login(
+  authenticate(
     username: "john_doe"
     secretKey: "secret123"
     secretPassword: "password456"
@@ -724,7 +724,7 @@ mutation {
 
 | Guard | Purpose | Scope |
 |-------|---------|-------|
-| `@Public()` | No authentication required | `login` mutation |
+| `@Public()` | No authentication required | `authenticate` mutation |
 | `UniversalAuthGuard` | Valid JWT required | All protected resolvers |
 | `AdminGuard` | User.isAdmin = true | User, Space management |
 | `SpaceAuthGuard` | User has required auth in space | Config operations |
@@ -932,7 +932,7 @@ Clean Architecture with Clear Separation:
 **Solution**: Ensure use cases are exported in `use-case.module.ts` and resolver has them injected.
 
 ### Issue: "JWT token expired"
-**Solution**: Token expires in 15 minutes. Request new token via `login` mutation.
+**Solution**: Token expires in 15 minutes. Request new token via `authenticate` mutation.
 
 ### Issue: "User not authorized for space"
 **Solution**: Assign space auth to user via `assignSpaceAuths` mutation before attempting space-specific operations.
