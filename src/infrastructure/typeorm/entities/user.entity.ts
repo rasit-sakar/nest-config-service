@@ -6,16 +6,16 @@ export class UserEntity {
   @PrimaryGeneratedColumn({ name: 'id' })
   id: string;
 
-  @Column({ name: 'userName', type: 'varchar', length: 100, nullable: false })
-  userName: string;
+  @Column({ name: 'username', type: 'varchar', length: 100, nullable: false })
+  username: string;
 
   @Column({ name: 'description', type: 'varchar', length: 200, nullable: true })
   description: string;
 
-  @Column({ name: 'secret_key', type: 'jsonb', nullable: false })
+  @Column({ name: 'secret_key', type: 'varchar', length: 255, nullable: false })
   secretKey: string;
 
-  @Column({ name: 'secret_password', type: 'jsonb', nullable: false })
+  @Column({ name: 'secret_password', type: 'text', nullable: false })
   secretPassword: string;
 
   @Column({ name: 'is_admin', type: 'boolean', nullable: false, default: false })

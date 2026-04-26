@@ -14,7 +14,7 @@ import { PostgresConfig } from '../config/postgres.config';
           type: 'postgres',
           host: postgresConfig.host,
           port: postgresConfig.port,
-          userName: postgresConfig.userName,
+          username: postgresConfig.username,
           password: postgresConfig.password,
           database: postgresConfig.database,
           entities: [],

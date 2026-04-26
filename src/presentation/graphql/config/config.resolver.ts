@@ -8,13 +8,12 @@ import { UpdateConfigCommand } from '../../../application/use-cases/config/updat
 import { DeleteConfigCommand } from '../../../application/use-cases/config/delete-config.command';
 import { CreateConfigGQLInput } from './models/create-config.input';
 import { UpdateConfigGQLInput } from './models/update-config.input';
-import { UniversalAuthGuard } from '../../auth/auth.guard';
-import { SpaceAuthGuard } from '../../auth/space-auth.guard';
-import { RequireSpaceAuth } from '../../auth/require-space-auth.decorator';
+import { SpaceAuthGuard } from '../../../infrastructure/auth/space-auth.guard';
+import { RequireSpaceAuth } from '../../../infrastructure/auth/require-space-auth.decorator';
 import { UserAuthType } from '../../../application/domain/user/models/user-auth-type';
 
 @Resolver(() => ConfigGQLModel)
-@UseGuards(UniversalAuthGuard, SpaceAuthGuard)
+@UseGuards(SpaceAuthGuard)
 export class ConfigResolver {
   constructor(
     private readonly listConfigUseCase: ListConfigQuery,

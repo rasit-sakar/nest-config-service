@@ -1,0 +1,16 @@
+import { Body, Controller, Post } from '@nestjs/common';
+import { UserService } from '../../../application/domain/user/user.service';
+
+@Controller('auth')
+export class AuthController {
+  constructor(private readonly userService: UserService) {}
+
+  @Post('login')
+  async authenticate(@Body() body: { username: string; secretKey: string; secretPassword: string }) {
+    const result = await this.userService.authenticateUser(body.username, body.secretKey, body.secretPassword);
+    if (!result) {
+      return { success: false, message: 'Invalid credentials' };
+    }
+    return { success: true, data: result };
+  }
+}

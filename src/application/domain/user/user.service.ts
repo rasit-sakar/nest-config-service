@@ -13,38 +13,38 @@ export class UserService {
     private readonly userRepository: UserRepository,
     private readonly configService: ConfigService,
   ) {}
-  findUserByUsername(userName: string) {
-    return this.userRepository.findUserByUsername(userName);
+  findUserByUsername(username: string) {
+    return this.userRepository.findUserByUsername(username);
   }
 
   createUser(createUserInput: CreateUserInput) {
     return this.userRepository.createUser(createUserInput);
   }
 
-  updateUser(userName: string, updateUserInput: UpdateUserInput) {
-    return this.userRepository.updateUser(userName, updateUserInput);
+  updateUser(username: string, updateUserInput: UpdateUserInput) {
+    return this.userRepository.updateUser(username, updateUserInput);
   }
 
-  async verifyAuthToken(userName: string, secretKey: string, secretPassword: string): Promise<boolean> {
-    const keys = await this.userRepository.getToken(userName);
+  async verifyAuthToken(username: string, secretKey: string, secretPassword: string): Promise<boolean> {
+    const keys = await this.userRepository.getToken(username);
     return keys?.secretKey === secretKey && keys?.secretPassword === secretPassword;
   }
 
   async authenticateUser(
-    userName: string,
+    username: string,
     secretKey: string,
     secretPassword: string,
   ): Promise<{ jwtToken: string; expiredAt: Date } | null> {
-    const user = await this.userRepository.findUserByUsername(userName);
+    const user = await this.userRepository.findUserByUsername(username);
     if (!user) return null;
-    const isVerified = await this.verifyAuthToken(userName, secretKey, secretPassword);
+    const isVerified = await this.verifyAuthToken(username, secretKey, secretPassword);
     if (!isVerified) {
       return null;
     }
     const appConfig = this.configService.get<AppConfig>('app');
     const userContext: UserContext = {
       userId: user.id,
-      userName: user.userName,
+      username: user.username,
       spaceAuths: user.spaceAuths,
       isAdmin: user.isAdmin,
     };
@@ -52,7 +52,7 @@ export class UserService {
     const jwtToken = await new SignJWT({ ...userContext })
       .setProtectedHeader({ alg: 'HS256' }) // Use EdDSA for asymmetric
       .setIssuedAt()
-      .setSubject(userName)
+      .setSubject(username)
       .setIssuer('https://your-auth-server.com')
       .setExpirationTime(expiredAt)
       .sign(new TextEncoder().encode(appConfig?.jwtSecret));

@@ -9,13 +9,12 @@ import { CreateConfigRequest, CreateConfigResponse } from './models/create-confi
 import { UpdateConfigRequest, UpdateConfigResponse } from './models/update-config.model';
 import { GetConfigResponse } from './models/get-config.model';
 import { DeleteConfigResponse } from './models/delete-config.model';
-import { UniversalAuthGuard } from '../../auth/auth.guard';
-import { SpaceAuthGuard } from '../../auth/space-auth.guard';
-import { RequireSpaceAuth } from '../../auth/require-space-auth.decorator';
+import { SpaceAuthGuard } from '../../../infrastructure/auth/space-auth.guard';
+import { RequireSpaceAuth } from '../../../infrastructure/auth/require-space-auth.decorator';
 import { UserAuthType } from '../../../application/domain/user/models/user-auth-type';
 
 @Controller('config')
-@UseGuards(UniversalAuthGuard, SpaceAuthGuard)
+@UseGuards(SpaceAuthGuard)
 export class ConfigController {
   constructor(
     private readonly listConfigUseCase: ListConfigQuery,

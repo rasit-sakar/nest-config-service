@@ -16,18 +16,18 @@ export class UserRepository {
     private readonly userSpaceAuthRepository: Repository<UserSpaceAuthEntity>,
   ) {}
 
-  async findUserByUsername(userName: string): Promise<User | null> {
+  async findUserByUsername(username: string): Promise<User | null> {
     const userEntity = await this.userRepository.findOne({
-      where: { userName },
+      where: { username },
       relations: ['spaceAuths'],
     });
     if (!userEntity) return null;
     return this.mapToDTO(userEntity);
   }
 
-  async getToken(userName: string): Promise<{ secretKey: string; secretPassword: string } | null> {
+  async getToken(username: string): Promise<{ secretKey: string; secretPassword: string } | null> {
     const userEntity = await this.userRepository.findOne({
-      where: { userName },
+      where: { username },
     });
     if (!userEntity) return null;
     return {
@@ -38,7 +38,7 @@ export class UserRepository {
 
   async createUser(createUserInput: CreateUserInput): Promise<User> {
     const userEntity = this.userRepository.create({
-      userName: createUserInput.userName,
+      username: createUserInput.username,
       description: createUserInput.description,
       secretKey: createUserInput.secretKey,
       secretPassword: createUserInput.secretPassword,
@@ -48,9 +48,9 @@ export class UserRepository {
     return this.mapToDTO(savedUser);
   }
 
-  async updateUser(userName: string, updateUserInput: Partial<CreateUserInput>): Promise<User> {
+  async updateUser(username: string, updateUserInput: Partial<CreateUserInput>): Promise<User> {
     const userEntity = await this.userRepository.findOne({
-      where: { userName },
+      where: { username },
     });
     if (!userEntity) throw new Error('User not found');
     if (updateUserInput.description !== undefined) userEntity.description = updateUserInput.description;
@@ -76,7 +76,7 @@ export class UserRepository {
   mapToDTO(userEntity: UserEntity): User {
     const user = {
       id: userEntity.id,
-      userName: userEntity.userName,
+      username: userEntity.username,
       description: userEntity.description,
       isAdmin: userEntity.isAdmin,
       spaceAuths: userEntity.spaceAuths.map((spaceAuthEntity) => this.mapToAuthDTO(spaceAuthEntity)),

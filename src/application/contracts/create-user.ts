@@ -1,5 +1,5 @@
 export class CreateUserInput {
-  userName: string;
+  username: string;
   description: string;
   secretKey: string;
   secretPassword: string;

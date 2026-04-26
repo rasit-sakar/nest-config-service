@@ -12,28 +12,37 @@ type ConfigGQLModel {
   updatedAt: String!
 }
 
-type Query {
-  getConfigs(filters: ConfigFiltersGQLInput): [ConfigGQLModel!]!
-  getConfig(name: String!, filters: ConfigFiltersGQLInput): ConfigGQLModel!
+type AuthResult {
+  jwtToken: String!
+  expiredAt: String!
 }
 
-input ConfigFiltersGQLInput {
-  space: String!
-  environment: String!
-  isDisabled: Boolean
+type UserGQLModel {
+  id: String!
+  username: String!
+  description: String!
+  isAdmin: Boolean!
+}
+
+type Query {
+  getConfigs(space: String!, isDisabled: Boolean): [ConfigGQLModel!]!
+  getConfig(name: String!, space: String!, isDisabled: Boolean): ConfigGQLModel!
+  getUser(username: String!): UserGQLModel!
 }
 
 type Mutation {
-  createConfig(input: CreateConfigGQLInput!): ConfigGQLModel!
-  updateConfig(name: String!, input: UpdateConfigGQLInput!): ConfigGQLModel!
-  deleteConfig(name: String!, filters: ConfigFiltersGQLInput!, updateReason: String!): Boolean!
+  createConfig(space: String!, input: CreateConfigGQLInput!): ConfigGQLModel!
+  updateConfig(space: String!, name: String!, input: UpdateConfigGQLInput!): ConfigGQLModel!
+  deleteConfig(name: String!, space: String!, updateReason: String!): Boolean!
+  createUser(input: CreateUserGQLInput!): UserGQLModel!
+  updateUser(username: String!, input: UpdateUserGQLInput!): UserGQLModel!
+  deleteUser(username: String!): Boolean!
+  login(username: String!, secretKey: String!, secretPassword: String!): AuthResult
 }
 
 input CreateConfigGQLInput {
   name: String!
   value: String!
-  environment: String!
-  space: String!
   description: String
   isSecret: Boolean!
   isDisabled: Boolean!
@@ -42,10 +51,23 @@ input CreateConfigGQLInput {
 input UpdateConfigGQLInput {
   name: String!
   value: String!
-  environment: String!
-  space: String!
   description: String
   isSecret: Boolean!
   isDisabled: Boolean
   updateReason: String!
+}
+
+input CreateUserGQLInput {
+  username: String!
+  description: String
+  secretKey: String!
+  secretPassword: String!
+  isAdmin: Boolean!
+}
+
+input UpdateUserGQLInput {
+  description: String
+  secretKey: String
+  secretPassword: String
+  isAdmin: Boolean
 }

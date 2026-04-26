@@ -1,7 +1,7 @@
 export class PostgresConfig {
   host: string;
   port: number;
-  userName: string;
+  username: string;
   password: string;
   database: string;
   migrations: Array<string>;
@@ -9,7 +9,7 @@ export class PostgresConfig {
     return {
       host: 'localhost',
       port: 5432,
-      userName: 'test',
+      username: 'test',
       password: 'test',
       database: 'config-db',
       migrations: ['dist/infrastructure/typeorm/migrations/*.js'],
