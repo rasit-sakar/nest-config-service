@@ -4,6 +4,7 @@ import { GraphQLModule } from '@nestjs/graphql';
 import { join } from 'path';
 import { ConfigResolver } from './config/config.resolver';
 import { UserResolver, AuthResolver } from './user/user.resolver';
+import { SpaceResolver } from './space/space.resolver';
 import { DomainModule } from '../../application/domain/domain.module';
 import { UseCaseModule } from '../../application/use-cases/use-case.module';
 
@@ -19,6 +20,6 @@ import { UseCaseModule } from '../../application/use-cases/use-case.module';
     DomainModule,
     UseCaseModule,
   ],
-  providers: [ConfigResolver, UserResolver, AuthResolver],
+  providers: [ConfigResolver, UserResolver, AuthResolver, SpaceResolver],
 })
 export class GraphqlModule {}

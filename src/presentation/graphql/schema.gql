@@ -31,11 +31,19 @@ type SpaceAuthGQLModel {
   userAuthType: String!
 }
 
+type SpaceGQLModel {
+  id: String!
+  name: String!
+  description: String!
+}
+
 type Query {
   getConfigs(space: String!, isDisabled: Boolean): [ConfigGQLModel!]!
   getConfig(name: String!, space: String!): ConfigGQLModel!
   getUser(username: String!): UserGQLModel!
   authenticate(username: String!, secretKey: String!, secretPassword: String!): AuthResult
+  getSpace(name: String!): SpaceGQLModel!
+  listSpaces: [SpaceGQLModel!]!
 }
 
 type Mutation {
@@ -46,6 +54,8 @@ type Mutation {
   updateUser(username: String!, input: UpdateUserGQLInput!): UserGQLModel!
   deleteUser(username: String!): Boolean!
   assignSpaceAuths(username: String!, input: AssignSpaceAuthsGQLInput!): UserGQLModel!
+  createSpace(input: CreateSpaceGQLInput!): SpaceGQLModel!
+  deleteSpace(name: String!): Boolean!
 }
 
 input CreateConfigGQLInput {
@@ -87,4 +97,9 @@ input AssignSpaceAuthsGQLInput {
 input SpaceAuthGQLInput {
   spaceName: String!
   userAuthType: String!
+}
+
+input CreateSpaceGQLInput {
+  name: String!
+  description: String
 }

@@ -8,9 +8,6 @@ export class SpaceEntity {
   @Column({ name: 'name', type: 'varchar', length: 50, nullable: false })
   name: string;
 
-  @Column({ name: 'environment', type: 'varchar', length: 20, nullable: false })
-  environment: string;
-
   @Column({ name: 'description', type: 'varchar', length: 200, nullable: true })
   description: string;
 }

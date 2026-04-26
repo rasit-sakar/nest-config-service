@@ -10,6 +10,10 @@ import { CreateUserCommand } from './user/create-user.command';
 import { UpdateUserCommand } from './user/update-user.command';
 import { DeleteUserCommand } from './user/delete-user.command';
 import { AssignSpaceAuthsCommand } from './user/assign-space-auths.command';
+import { CreateSpaceCommand } from './space/create-space.command';
+import { GetSpaceQuery } from './space/get-space.query';
+import { ListSpaceQuery } from './space/list-space.query';
+import { DeleteSpaceCommand } from './space/delete-space.command';
 import { DomainModule } from '../domain/domain.module';
 
 @Global()
@@ -27,6 +31,10 @@ import { DomainModule } from '../domain/domain.module';
     UpdateUserCommand,
     DeleteUserCommand,
     AssignSpaceAuthsCommand,
+    CreateSpaceCommand,
+    GetSpaceQuery,
+    ListSpaceQuery,
+    DeleteSpaceCommand,
   ],
   exports: [
     ListConfigQuery,
@@ -40,6 +48,10 @@ import { DomainModule } from '../domain/domain.module';
     UpdateUserCommand,
     DeleteUserCommand,
     AssignSpaceAuthsCommand,
+    CreateSpaceCommand,
+    GetSpaceQuery,
+    ListSpaceQuery,
+    DeleteSpaceCommand,
   ],
 })
 export class UseCaseModule {}

@@ -16,7 +16,6 @@ export class NewMigration1772999668158 implements MigrationInterface {
     await queryRunner.query(`CREATE TABLE spaces (
       id uuid DEFAULT gen_random_uuid() PRIMARY KEY UNIQUE,
       name varchar(50) NOT NULL,
-      environment varchar(20) NOT NULL,
       description varchar(200)
     )`);
 
