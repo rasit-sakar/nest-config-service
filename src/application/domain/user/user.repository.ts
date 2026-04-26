@@ -61,6 +61,14 @@ export class UserRepository {
     return this.mapToDTO(updatedUser);
   }
 
+  async deleteUser(username: string): Promise<void> {
+    const userEntity = await this.userRepository.findOne({
+      where: { username },
+    });
+    if (!userEntity) throw new Error('User not found');
+    await this.userRepository.remove(userEntity);
+  }
+
   async assingnSpaceAuthToUser(userId: string, spaceAuths: UserSpaceAuth[]): Promise<void> {
     await this.userSpaceAuthRepository.delete({ userId });
     const spaceAuthEntities = spaceAuths.map((spaceAuth) =>

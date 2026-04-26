@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigController } from './config/config.controller';
-import { UserController } from './admin/user.controller';
+import { UserController } from './user/user.controller';
 import { AuthController } from './auth/auth.controller';
 import { UseCaseModule } from '../../application/use-cases/use-case.module';
 import { DomainModule } from '../../application/domain/domain.module';

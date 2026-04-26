@@ -6,6 +6,7 @@ import { SignJWT } from 'jose';
 import { UserContext } from './models/user-context';
 import { AppConfig } from '../../../infrastructure/config/app.config';
 import { ConfigService } from '@nestjs/config';
+import { AuthenticateInput } from '../../contracts/authenticate.model';
 
 @Injectable()
 export class UserService {
@@ -25,19 +26,23 @@ export class UserService {
     return this.userRepository.updateUser(username, updateUserInput);
   }
 
+  deleteUser(username: string) {
+    return this.userRepository.deleteUser(username);
+  }
+
   async verifyAuthToken(username: string, secretKey: string, secretPassword: string): Promise<boolean> {
     const keys = await this.userRepository.getToken(username);
     return keys?.secretKey === secretKey && keys?.secretPassword === secretPassword;
   }
 
-  async authenticateUser(
-    username: string,
-    secretKey: string,
-    secretPassword: string,
-  ): Promise<{ jwtToken: string; expiredAt: Date } | null> {
-    const user = await this.userRepository.findUserByUsername(username);
+  async authenticate(authenticateInput: AuthenticateInput): Promise<{ jwtToken: string; expiredAt: Date } | null> {
+    const user = await this.userRepository.findUserByUsername(authenticateInput.username);
     if (!user) return null;
-    const isVerified = await this.verifyAuthToken(username, secretKey, secretPassword);
+    const isVerified = await this.verifyAuthToken(
+      authenticateInput.username,
+      authenticateInput.secretKey,
+      authenticateInput.secretPassword,
+    );
     if (!isVerified) {
       return null;
     }
@@ -52,7 +57,7 @@ export class UserService {
     const jwtToken = await new SignJWT({ ...userContext })
       .setProtectedHeader({ alg: 'HS256' }) // Use EdDSA for asymmetric
       .setIssuedAt()
-      .setSubject(username)
+      .setSubject(authenticateInput.username)
       .setIssuer('https://your-auth-server.com')
       .setExpirationTime(expiredAt)
       .sign(new TextEncoder().encode(appConfig?.jwtSecret));
